@@ -1,0 +1,2200 @@
+{
+  "data": {
+    "application": [],
+    "applicationfile": [],
+    "category2service": [],
+    "client": [],
+    "comissionlookup": [],
+    "comment": [],
+    "contactinfo": [],
+    "contract": [],
+    "contractassistant": [],
+    "contractcategory": [],
+    "contractcomission": [],
+    "country": [],
+    "degree": [],
+    "depositaccount": [],
+    "doctype": [],
+    "goal": [],
+    "group2service": [],
+    "invoice": [],
+    "lead": [],
+    "leaddetail": [],
+    "leadlevel": [],
+    "message": [],
+    "notifications": [],
+    "notifyinterval": [],
+    "paymentoption": [],
+    "publicfiles": [],
+    "publicuser": [],
+    "realservicetype": [],
+    "role": [],
+    "sales2realservicetype": [],
+    "salescomissiongoal": [],
+    "salesgroup": [],
+    "salesrole": [],
+    "servcomissionlookup": [],
+    "servlevel": [],
+    "servrole": [],
+    "servappcomissionlookup": [],
+    "service": [],
+    "servicecomission": [],
+    "servicedetail": [],
+    "serviceinvoice": [],
+    "serviceprogress": [],
+    "serviceprogressupdate": [],
+    "servicestatus": [],
+    "servicetype": [],
+    "servicetypegroup": [],
+    "staticlink": [],
+    "status": [],
+    "subrole": [],
+    "subrole_handle_salesgroup": [],
+    "subrole_has_realservicetype": [],
+    "user": [
+      {
+        "nickname": "demouser",
+        "password": "$2a$10$5FECTsK6CAnIwcxDw/XhDeZi9jGakJlkHTslWRLsNciTfhL9skbr2",
+        "email": "han.lai321@gmail.com",
+        "firstname": "first",
+        "lastname": "last",
+        "role": 3,
+        "active": true,
+        "rank": 1,
+        "userLevel": 1,
+        "createdAt": "2016-07-07T20:50:27.964Z",
+        "updatedAt": "2016-07-07T21:13:16.066Z",
+        "id": 1
+      }
+    ],
+    "userinservice": [],
+    "userlevel": [],
+    "visainfo": [],
+    "whoownswho": []
+  },
+  "schema": {
+    "application": {
+      "collageName": {
+        "type": "string"
+      },
+      "appliedMajor": {
+        "type": "string"
+      },
+      "appliedDegree": {
+        "type": "integer",
+        "model": "degree",
+        "foreignKey": true,
+        "alias": "appliedDegree"
+      },
+      "writer": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "writer"
+      },
+      "service": {
+        "type": "integer",
+        "model": "servicedetail",
+        "foreignKey": true,
+        "alias": "service"
+      },
+      "decided": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "decidedDate": {
+        "type": "date"
+      },
+      "applied": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "submitDate": {
+        "type": "date"
+      },
+      "newDev": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "succeed": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "acceptedDate": {
+        "type": "date"
+      },
+      "appliedSemester": {
+        "type": "date"
+      },
+      "studentCondition": {
+        "type": "string"
+      },
+      "deadline": {
+        "type": "date"
+      },
+      "studentDecision": {
+        "type": "boolean"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "applicationfile": {
+      "description": {
+        "type": "string"
+      },
+      "file": {
+        "type": "integer",
+        "model": "publicfiles",
+        "foreignKey": true,
+        "alias": "file"
+      },
+      "application": {
+        "type": "integer",
+        "model": "application",
+        "foreignKey": true,
+        "alias": "application"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "category2service": {
+      "contractCategory": {
+        "type": "integer",
+        "model": "contractcategory",
+        "foreignKey": true,
+        "alias": "contractCategory"
+      },
+      "serviceType": {
+        "type": "integer",
+        "model": "servicetype",
+        "foreignKey": true,
+        "alias": "serviceType"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "client": {
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "firstName": {
+        "type": "string"
+      },
+      "lastName": {
+        "type": "string"
+      },
+      "pinyin": {
+        "type": "string"
+      },
+      "chineseName": {
+        "type": "string"
+      },
+      "primaryPhone": {
+        "type": "string"
+      },
+      "secondaryPhone": {
+        "type": "string"
+      },
+      "primaryEmail": {
+        "type": "string"
+      },
+      "secondaryEmail": {
+        "type": "string"
+      },
+      "otherInfo": {
+        "type": "string"
+      },
+      "publicKey": {
+        "type": "string",
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "comissionlookup": {
+      "rolename": {
+        "type": "string"
+      },
+      "lead": {
+        "type": "integer",
+        "model": "lead",
+        "foreignKey": true,
+        "alias": "lead"
+      },
+      "leadDetail": {
+        "type": "integer",
+        "model": "leaddetail",
+        "foreignKey": true,
+        "alias": "leadDetail"
+      },
+      "salesGroup": {
+        "type": "integer",
+        "model": "salesgroup",
+        "foreignKey": true,
+        "alias": "salesGroup"
+      },
+      "comission": {
+        "type": "float"
+      },
+      "alone": {
+        "type": "boolean"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "comment": {
+      "comment": {
+        "type": "string"
+      },
+      "contract": {
+        "type": "integer",
+        "model": "contract",
+        "foreignKey": true,
+        "alias": "contract"
+      },
+      "service": {
+        "type": "integer",
+        "model": "service",
+        "foreignKey": true,
+        "alias": "service"
+      },
+      "application": {
+        "type": "integer",
+        "model": "application",
+        "foreignKey": true,
+        "alias": "application"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "contactinfo": {
+      "primaryCell": {
+        "type": "string"
+      },
+      "secondaryEmail": {
+        "type": "string"
+      },
+      "skype": {
+        "type": "string"
+      },
+      "qq": {
+        "type": "string"
+      },
+      "wechat": {
+        "type": "string"
+      },
+      "parentPhone": {
+        "type": "string"
+      },
+      "parentEmail": {
+        "type": "string"
+      },
+      "emergencyContact": {
+        "type": "string"
+      },
+      "otherContact": {
+        "type": "string"
+      },
+      "service": {
+        "type": "integer",
+        "model": "servicedetail",
+        "foreignKey": true,
+        "alias": "service"
+      },
+      "client": {
+        "type": "integer",
+        "model": "client",
+        "foreignKey": true,
+        "alias": "client"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "contract": {
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "namekey": {
+        "type": "string"
+      },
+      "salesGroup": {
+        "type": "integer",
+        "model": "salesgroup",
+        "foreignKey": true,
+        "alias": "salesGroup"
+      },
+      "contractCategory": {
+        "type": "integer",
+        "model": "contractcategory",
+        "foreignKey": true,
+        "alias": "contractCategory"
+      },
+      "client": {
+        "type": "integer",
+        "model": "client",
+        "foreignKey": true,
+        "alias": "client",
+        "defaultsTo": 1
+      },
+      "lead": {
+        "type": "integer",
+        "model": "lead",
+        "foreignKey": true,
+        "alias": "lead"
+      },
+      "leadDetail": {
+        "type": "integer",
+        "model": "leaddetail",
+        "foreignKey": true,
+        "alias": "leadDetail"
+      },
+      "leadName": {
+        "type": "string"
+      },
+      "leadLevel": {
+        "type": "integer",
+        "model": "leadlevel",
+        "foreignKey": true,
+        "alias": "leadLevel"
+      },
+      "status": {
+        "type": "integer",
+        "model": "status",
+        "foreignKey": true,
+        "alias": "status"
+      },
+      "salesFollowup": {
+        "type": "string",
+        "size": 1024
+      },
+      "salesRecord": {
+        "type": "string",
+        "size": 1024
+      },
+      "expertContactDate": {
+        "type": "date"
+      },
+      "expertFollowup": {
+        "type": "string",
+        "size": 1024
+      },
+      "originalText": {
+        "type": "string",
+        "size": 2048
+      },
+      "country": {
+        "type": "integer",
+        "model": "country",
+        "foreignKey": true,
+        "alias": "country"
+      },
+      "validI20": {
+        "type": "boolean",
+        "defaultsTo": "true"
+      },
+      "gpa": {
+        "type": "float",
+        "defaultsTo": null
+      },
+      "toefl": {
+        "type": "float"
+      },
+      "sat": {
+        "type": "float"
+      },
+      "gre": {
+        "type": "float"
+      },
+      "age": {
+        "type": "string"
+      },
+      "gmat": {
+        "type": "float"
+      },
+      "otherScore": {
+        "type": "string"
+      },
+      "degree": {
+        "type": "integer",
+        "model": "degree",
+        "foreignKey": true,
+        "alias": "degree"
+      },
+      "major": {
+        "type": "string"
+      },
+      "diagnose": {
+        "type": "string"
+      },
+      "contractSigned": {
+        "type": "date"
+      },
+      "contractPaid": {
+        "type": "date"
+      },
+      "contractPrice": {
+        "type": "float"
+      },
+      "contractDetail": {
+        "type": "string"
+      },
+      "previousSchool": {
+        "type": "string"
+      },
+      "targetSchool": {
+        "type": "string"
+      },
+      "targetSchoolDegree": {
+        "type": "integer",
+        "model": "degree",
+        "foreignKey": true,
+        "alias": "targetSchoolDegree"
+      },
+      "applicationFeePaid": {
+        "type": "boolean",
+        "defaultsTo": "false"
+      },
+      "paymentOption": {
+        "type": "integer",
+        "model": "paymentoption",
+        "foreignKey": true,
+        "alias": "paymentOption"
+      },
+      "contractUser": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "contractUser"
+      },
+      "endFeeDue": {
+        "type": "boolean",
+        "defaultsTo": "false"
+      },
+      "endFee": {
+        "type": "boolean",
+        "defaultsTo": "false"
+      },
+      "assistant1": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "assistant1"
+      },
+      "assistant2": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "assistant2"
+      },
+      "assistant3": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "assistant3"
+      },
+      "assistant4": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "assistant4"
+      },
+      "assisCont1": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "assisCont1"
+      },
+      "assisCont2": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "assisCont2"
+      },
+      "expert1": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "expert1"
+      },
+      "expert2": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "expert2"
+      },
+      "sales1": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "sales1"
+      },
+      "sales2": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "sales2"
+      },
+      "teacher": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "teacher"
+      },
+      "deleted": {
+        "type": "boolean",
+        "defaultsTo": "false"
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "contractassistant": {
+      "contract": {
+        "type": "integer",
+        "model": "contract",
+        "foreignKey": true,
+        "alias": "contract"
+      },
+      "user": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "user"
+      },
+      "email": {
+        "type": "integer",
+        "defaultsTo": 0
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "contractcategory": {
+      "contractCategory": {
+        "type": "string",
+        "unique": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "contractcomission": {
+      "user": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "user"
+      },
+      "service": {
+        "type": "integer",
+        "model": "service",
+        "foreignKey": true,
+        "alias": "service"
+      },
+      "salesRole": {
+        "type": "integer",
+        "model": "salesrole",
+        "foreignKey": true,
+        "alias": "salesRole"
+      },
+      "extra": {
+        "type": "float"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "country": {
+      "country": {
+        "type": "string",
+        "unique": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "degree": {
+      "degree": {
+        "type": "string",
+        "unique": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "depositaccount": {
+      "account": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "doctype": {
+      "docType": {
+        "type": "string",
+        "unique": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "goal": {
+      "user": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "user"
+      },
+      "month": {
+        "type": "integer"
+      },
+      "year": {
+        "type": "integer"
+      },
+      "transferSaleGoal": {
+        "type": "integer"
+      },
+      "transferExpGoal": {
+        "type": "integer"
+      },
+      "emergSaleGoal": {
+        "type": "integer"
+      },
+      "emergExpGoal": {
+        "type": "integer"
+      },
+      "highSaleGoal": {
+        "type": "integer"
+      },
+      "highExpGoal": {
+        "type": "integer"
+      },
+      "studySaleGoal": {
+        "type": "integer"
+      },
+      "studyExpGoal": {
+        "type": "integer"
+      },
+      "leadGoal": {
+        "type": "integer"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "group2service": {
+      "salesGroup": {
+        "type": "integer",
+        "model": "salesgroup",
+        "foreignKey": true,
+        "alias": "salesGroup"
+      },
+      "contractCategory": {
+        "type": "integer",
+        "model": "contractcategory",
+        "foreignKey": true,
+        "alias": "contractCategory"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "invoice": {
+      "contract": {
+        "type": "integer",
+        "model": "contract",
+        "foreignKey": true,
+        "alias": "contract"
+      },
+      "nontaxable": {
+        "type": "float",
+        "defaultsTo": 0
+      },
+      "remittances": {
+        "type": "float",
+        "defaultsTo": 0
+      },
+      "other": {
+        "type": "float",
+        "defaultsTo": 0
+      },
+      "receivedTotal": {
+        "type": "float",
+        "defaultsTo": 0
+      },
+      "receivedNontaxable": {
+        "type": "float",
+        "defaultsTo": 0
+      },
+      "receivedOther": {
+        "type": "float",
+        "defaultsTo": 0
+      },
+      "receivedRemittances": {
+        "type": "float",
+        "defaultsTo": 0
+      },
+      "receivedDate": {
+        "type": "date"
+      },
+      "depositAccount": {
+        "type": "integer",
+        "model": "depositaccount",
+        "foreignKey": true,
+        "alias": "depositAccount"
+      },
+      "paymentOption": {
+        "type": "integer",
+        "model": "paymentoption",
+        "foreignKey": true,
+        "alias": "paymentOption"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "lead": {
+      "lead": {
+        "type": "string",
+        "unique": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "leaddetail": {
+      "leadDetail": {
+        "type": "string"
+      },
+      "lead": {
+        "type": "integer",
+        "model": "lead",
+        "foreignKey": true,
+        "alias": "lead"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "leadlevel": {
+      "leadLevel": {
+        "type": "string",
+        "unique": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "message": {
+      "from": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "from"
+      },
+      "to": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "to"
+      },
+      "text": {
+        "type": "string"
+      },
+      "subject": {
+        "type": "string"
+      },
+      "replyTo": {
+        "type": "integer",
+        "model": "message",
+        "foreignKey": true,
+        "alias": "replyTo"
+      },
+      "read": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "notifications": {
+      "contract": {
+        "type": "integer",
+        "model": "contract",
+        "foreignKey": true,
+        "alias": "contract"
+      },
+      "days": {
+        "type": "integer"
+      },
+      "user": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "user"
+      },
+      "reason": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "notifyinterval": {
+      "dayInterval": {
+        "type": "string"
+      },
+      "textNotification": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "paymentoption": {
+      "paymentOption": {
+        "type": "string",
+        "unique": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "publicfiles": {
+      "filename": {
+        "type": "string"
+      },
+      "path": {
+        "type": "string"
+      },
+      "uploadedBy": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "uploadedBy"
+      },
+      "fileCategory": {
+        "type": "string",
+        "defaultsTo": 1
+      },
+      "role": {
+        "type": "integer",
+        "model": "role",
+        "foreignKey": true,
+        "alias": "role"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "publicuser": {
+      "username": {
+        "type": "string",
+        "unique": true
+      },
+      "password": {
+        "type": "string"
+      },
+      "email": {
+        "type": "string",
+        "unique": true
+      },
+      "subscribe": {
+        "type": "boolean",
+        "defaultsTo": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "realservicetype": {
+      "realServiceType": {
+        "type": "string",
+        "unique": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "role": {
+      "role": {
+        "type": "string",
+        "unique": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "sales2realservicetype": {
+      "serviceType": {
+        "type": "integer",
+        "model": "servicetype",
+        "foreignKey": true,
+        "alias": "serviceType"
+      },
+      "realServiceType": {
+        "type": "integer",
+        "model": "realservicetype",
+        "foreignKey": true,
+        "alias": "realServiceType"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "salescomissiongoal": {
+      "user": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "user"
+      },
+      "year": {
+        "type": "integer"
+      },
+      "month": {
+        "type": "integer"
+      },
+      "goal": {
+        "type": "float"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "salesgroup": {
+      "salesGroup": {
+        "type": "string",
+        "unique": true
+      },
+      "department": {
+        "type": "integer",
+        "model": "role",
+        "foreignKey": true,
+        "alias": "department"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "salesrole": {
+      "salesRole": {
+        "type": "string"
+      },
+      "comissionPercent": {
+        "type": "float"
+      },
+      "flatComission": {
+        "type": "float"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "servcomissionlookup": {
+      "realServiceType": {
+        "type": "integer",
+        "model": "realservicetype",
+        "foreignKey": true,
+        "alias": "realServiceType"
+      },
+      "servLevel": {
+        "type": "string"
+      },
+      "degree": {
+        "type": "integer",
+        "model": "degree",
+        "foreignKey": true,
+        "alias": "degree"
+      },
+      "serviceProgress": {
+        "type": "integer",
+        "model": "serviceprogress",
+        "foreignKey": true,
+        "alias": "serviceProgress"
+      },
+      "score": {
+        "type": "float"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "servlevel": {
+      "servLevel": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "servrole": {
+      "servRole": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "servappcomissionlookup": {
+      "realServiceType": {
+        "type": "integer",
+        "model": "realservicetype",
+        "foreignKey": true,
+        "alias": "realServiceType"
+      },
+      "decideH": {
+        "type": "float"
+      },
+      "decideCC": {
+        "type": "float"
+      },
+      "decideU": {
+        "type": "float"
+      },
+      "appliedH": {
+        "type": "float"
+      },
+      "appliedCC": {
+        "type": "float"
+      },
+      "appliedU": {
+        "type": "float"
+      },
+      "perAppIfAcceptH": {
+        "type": "float"
+      },
+      "perAppIfAcceptCC": {
+        "type": "float"
+      },
+      "perAppIfAcceptU": {
+        "type": "float"
+      },
+      "flatIfAppcepted": {
+        "type": "float"
+      },
+      "level": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "service": {
+      "client": {
+        "type": "integer",
+        "model": "client",
+        "foreignKey": true,
+        "alias": "client"
+      },
+      "cName": {
+        "type": "string"
+      },
+      "lName": {
+        "type": "string"
+      },
+      "fName": {
+        "type": "string"
+      },
+      "namekey": {
+        "type": "string"
+      },
+      "contractKey": {
+        "type": "string"
+      },
+      "generated": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "indate": {
+        "type": "date"
+      },
+      "contract": {
+        "type": "integer",
+        "model": "contract",
+        "foreignKey": true,
+        "alias": "contract",
+        "defaultsTo": 0
+      },
+      "serviceType": {
+        "type": "integer",
+        "model": "servicetype",
+        "foreignKey": true,
+        "alias": "serviceType"
+      },
+      "serviceProgress": {
+        "type": "integer",
+        "model": "serviceprogress",
+        "foreignKey": true,
+        "alias": "serviceProgress",
+        "defaultsTo": 1
+      },
+      "studentDestination": {
+        "type": "string"
+      },
+      "step1": {
+        "type": "date"
+      },
+      "step2": {
+        "type": "date"
+      },
+      "price": {
+        "type": "float",
+        "defaultsTo": 0
+      },
+      "link": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "servicecomission": {
+      "serviceDetail": {
+        "type": "integer",
+        "model": "servicedetail",
+        "foreignKey": true,
+        "alias": "serviceDetail"
+      },
+      "year": {
+        "type": "integer"
+      },
+      "month": {
+        "type": "integer"
+      },
+      "extra": {
+        "type": "float"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "servicedetail": {
+      "service": {
+        "type": "integer",
+        "model": "service",
+        "foreignKey": true,
+        "alias": "service"
+      },
+      "contract": {
+        "type": "integer",
+        "model": "contract",
+        "foreignKey": true,
+        "alias": "contract"
+      },
+      "user": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "user"
+      },
+      "realServiceType": {
+        "type": "integer",
+        "model": "realservicetype",
+        "foreignKey": true,
+        "alias": "realServiceType"
+      },
+      "serviceProgress": {
+        "type": "integer",
+        "model": "serviceprogress",
+        "foreignKey": true,
+        "alias": "serviceProgress",
+        "defaultsTo": 1
+      },
+      "degree": {
+        "type": "integer",
+        "model": "degree",
+        "foreignKey": true,
+        "alias": "degree"
+      },
+      "correspondService": {
+        "type": "integer",
+        "model": "servicedetail",
+        "foreignKey": true,
+        "alias": "correspondService"
+      },
+      "level": {
+        "type": "string"
+      },
+      "indate": {
+        "type": "date"
+      },
+      "link": {
+        "type": "string"
+      },
+      "contractKey": {
+        "type": "string"
+      },
+      "cName": {
+        "type": "string"
+      },
+      "namekey": {
+        "type": "string"
+      },
+      "effectiveSemester": {
+        "type": "date"
+      },
+      "semesterType": {
+        "type": "string"
+      },
+      "deleted": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "serviceinvoice": {
+      "service": {
+        "type": "integer",
+        "model": "service",
+        "foreignKey": true,
+        "alias": "service"
+      },
+      "invoice": {
+        "type": "integer",
+        "model": "invoice",
+        "foreignKey": true,
+        "alias": "invoice"
+      },
+      "paidAmount": {
+        "type": "float"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "serviceprogress": {
+      "serviceProgress": {
+        "type": "string",
+        "unique": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "serviceprogressupdate": {
+      "serviceDetail": {
+        "type": "integer",
+        "model": "servicedetail",
+        "foreignKey": true,
+        "alias": "serviceDetail"
+      },
+      "serviceProgress": {
+        "type": "integer",
+        "model": "servicestatus",
+        "foreignKey": true,
+        "alias": "serviceProgress"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "servicestatus": {
+      "serviceStatus": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "servicetype": {
+      "serviceType": {
+        "type": "string",
+        "unique": true
+      },
+      "alias": {
+        "type": "string",
+        "unique": true
+      },
+      "category": {
+        "type": "string",
+        "defaultsTo": "Transfer",
+        "enum": [
+          "Transfer",
+          "Emerg",
+          "Study",
+          "Visa"
+        ]
+      },
+      "addApplication": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "comission": {
+        "type": "float",
+        "defaultsTo": 0
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "servicetypegroup": {
+      "groupServiceType": {
+        "type": "integer",
+        "model": "servicetype",
+        "foreignKey": true,
+        "alias": "groupServiceType"
+      },
+      "serviceType": {
+        "type": "integer",
+        "model": "servicetype",
+        "foreignKey": true,
+        "alias": "serviceType"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "staticlink": {
+      "name": {
+        "type": "string"
+      },
+      "fileCategory": {
+        "type": "integer",
+        "model": "doctype",
+        "foreignKey": true,
+        "alias": "fileCategory"
+      },
+      "user": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "user"
+      },
+      "role": {
+        "type": "integer",
+        "model": "role",
+        "foreignKey": true,
+        "alias": "role"
+      },
+      "link": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "status": {
+      "status": {
+        "type": "string",
+        "unique": true
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "subrole": {
+      "roleName": {
+        "type": "string"
+      },
+      "role": {
+        "type": "integer",
+        "model": "role",
+        "foreignKey": true,
+        "alias": "role"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "subrole_handle_salesgroup": {
+      "subRole": {
+        "type": "integer",
+        "model": "subrole",
+        "foreignKey": true,
+        "alias": "subRole"
+      },
+      "salesGroup": {
+        "type": "integer",
+        "model": "salesgroup",
+        "foreignKey": true,
+        "alias": "salesGroup"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "subrole_has_realservicetype": {
+      "realServiceType": {
+        "type": "integer",
+        "model": "realservicetype",
+        "foreignKey": true,
+        "alias": "realServiceType"
+      },
+      "subRole": {
+        "type": "integer",
+        "model": "subrole",
+        "foreignKey": true,
+        "alias": "subRole"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "user": {
+      "password": {
+        "type": "string"
+      },
+      "email": {
+        "type": "string",
+        "unique": true
+      },
+      "personalemail": {
+        "type": "string"
+      },
+      "nickname": {
+        "type": "string",
+        "unique": true
+      },
+      "firstname": {
+        "type": "string"
+      },
+      "lastname": {
+        "type": "string"
+      },
+      "phone": {
+        "type": "string"
+      },
+      "skype": {
+        "type": "string"
+      },
+      "wechat": {
+        "type": "string"
+      },
+      "role": {
+        "type": "integer",
+        "model": "role",
+        "foreignKey": true,
+        "alias": "role",
+        "defaultsTo": 1
+      },
+      "subRole": {
+        "type": "integer",
+        "model": "subrole",
+        "foreignKey": true,
+        "alias": "subRole"
+      },
+      "secondaryRole": {
+        "type": "integer",
+        "model": "role",
+        "foreignKey": true,
+        "alias": "secondaryRole"
+      },
+      "secondarySubRole": {
+        "type": "integer",
+        "model": "role",
+        "foreignKey": true,
+        "alias": "secondarySubRole"
+      },
+      "active": {
+        "type": "boolean",
+        "defaultsTo": false
+      },
+      "rank": {
+        "type": "integer",
+        "defaultsTo": 1
+      },
+      "secondaryRank": {
+        "type": "integer"
+      },
+      "boss": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "boss"
+      },
+      "userLevel": {
+        "type": "integer",
+        "model": "userlevel",
+        "foreignKey": true,
+        "alias": "userLevel",
+        "defaultsTo": 1
+      },
+      "dropbox": {
+        "type": "string"
+      },
+      "evernote": {
+        "type": "string"
+      },
+      "address": {
+        "type": "string"
+      },
+      "city": {
+        "type": "string"
+      },
+      "state": {
+        "type": "string"
+      },
+      "zipcode": {
+        "type": "string"
+      },
+      "bio": {
+        "type": "string",
+        "size": 512
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "userinservice": {
+      "user": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "user"
+      },
+      "serviceDetail": {
+        "type": "integer",
+        "model": "servicedetail",
+        "foreignKey": true,
+        "alias": "serviceDetail"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "userlevel": {
+      "userLevel": {
+        "type": "string",
+        "unique": true
+      },
+      "userComission": {
+        "type": "float",
+        "defaultsTo": 1
+      },
+      "baseSalary": {
+        "type": "float",
+        "defaultsTo": 0
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "visainfo": {
+      "serviceDetail": {
+        "type": "integer",
+        "model": "servicedetail",
+        "foreignKey": true,
+        "alias": "serviceDetail"
+      },
+      "visaProgress": {
+        "type": "string"
+      },
+      "Result": {
+        "type": "string"
+      },
+      "ResultComment": {
+        "type": "string"
+      },
+      "endDate": {
+        "type": "date"
+      },
+      "secondDate": {
+        "type": "date"
+      },
+      "secondResult": {
+        "type": "string"
+      },
+      "secondResultComment": {
+        "type": "string"
+      },
+      "thirdDate": {
+        "type": "date"
+      },
+      "thirdResult": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "whoownswho": {
+      "puppet": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "puppet",
+        "defaultsTo": 0
+      },
+      "boss": {
+        "type": "integer",
+        "model": "user",
+        "foreignKey": true,
+        "alias": "boss",
+        "defaultsTo": 0
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    }
+  },
+  "counters": {
+    "application": {},
+    "applicationfile": {},
+    "category2service": {},
+    "client": {},
+    "comissionlookup": {},
+    "comment": {},
+    "contactinfo": {},
+    "contract": {},
+    "contractassistant": {},
+    "contractcategory": {},
+    "contractcomission": {},
+    "country": {},
+    "degree": {},
+    "depositaccount": {},
+    "doctype": {},
+    "goal": {},
+    "group2service": {},
+    "invoice": {},
+    "lead": {},
+    "leaddetail": {},
+    "leadlevel": {},
+    "message": {},
+    "notifications": {},
+    "notifyinterval": {},
+    "paymentoption": {},
+    "publicfiles": {},
+    "publicuser": {},
+    "realservicetype": {},
+    "role": {},
+    "sales2realservicetype": {},
+    "salescomissiongoal": {},
+    "salesgroup": {},
+    "salesrole": {},
+    "servcomissionlookup": {},
+    "servlevel": {},
+    "servrole": {},
+    "servappcomissionlookup": {},
+    "service": {},
+    "servicecomission": {},
+    "servicedetail": {},
+    "serviceinvoice": {},
+    "serviceprogress": {},
+    "serviceprogressupdate": {},
+    "servicestatus": {},
+    "servicetype": {},
+    "servicetypegroup": {},
+    "staticlink": {},
+    "status": {},
+    "subrole": {},
+    "subrole_handle_salesgroup": {},
+    "subrole_has_realservicetype": {},
+    "user": {
+      "id": 1
+    },
+    "userinservice": {},
+    "userlevel": {},
+    "visainfo": {},
+    "whoownswho": {}
+  }
+}

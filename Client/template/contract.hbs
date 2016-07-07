@@ -1,0 +1,100 @@
+<section class="contract-list" style="position:inherit;width:100%">
+
+<header>
+    <h1 class="title">Contracts</h1>
+    <section class="page-actions" style="float:right">
+        <button class="button-add">Add New</button>
+        <label>Start Date</label><input id="startDate" value="09-01-2014"></input>
+        <label>End Date</label><input id="endDate"></input>
+        <button class="button-alt" >刷新</button>
+        
+    </section>
+    <section class="page-actions" style="float:right">
+        <label>Lead</label><input class="filter" name="leadName"></input>
+    </section>
+
+
+</header>
+<section class="content">
+    <section class="pagination">
+
+    </section>
+<div class="table-wrapper">
+    <div class="scrollable">
+        <table class="Contracts responsive">
+        <thead><tr id="scrollableheader">
+        <th class="sortable" data-attr='client.chineseName'>学生中文名</th>
+        <th class="sortable" data-attr='contractCategory'>咨询服务类别</th>
+        <th class="sortable" data-attr='degree.degree'>就读学位</th>
+        <th class="sortable" data-attr='createdAt'>首次咨询日期</th>       
+        <th class="sortable" data-attr='lead'>Lead种类</th>
+        <th class="sortable" data-attr='leadName'>Lead介绍人</th>
+        <th class="sortable" data-attr='leadLevel'>LeadLevel</th>
+        
+        <th class="sortable" data-attr='assistant1.nickname'>前期助理1</th>
+        <th class="sortable" data-attr='assistant2.nickname'>前期助理2</th>
+        <th class="sortable" data-attr='assistant3.nickname'>前期助理3</th>
+        <th class="sortable" data-attr='assistant4.nickname'>前期助理4</th>
+        <th class="sortable" data-attr='assisCont1.nickname'>助签1</th>
+        <th class="sortable" data-attr='assisCont2.nickname'>助签2</th>
+        <th class="sortable" data-attr='sales1.nickname'>销售顾问1</th>
+        <th class="sortable" data-attr='sales2.nickname'>销售顾问2</th>
+        <th class="sortable" data-attr='expert1.nickname'>专家1</th>
+        <th class="sortable" data-attr='expert2.nickname'>专家2</th>
+        <th class="sortable" data-attr='status'>签约状态</th>
+              
+        <th>销售跟进记录</th>
+        <th>销售跟进摘要</th>
+        <th class="sortable" data-attr='expert.nickname'>专家咨询日期</th>
+        <th>专家建议</th>
+        <th class="sortable" data-attr='client.firstName'>First Name</th>
+        <th class="sortable" data-attr='client.lastName'>Last Name</th>
+        <th>求助原文</th>
+        <th class="sortable" data-attr='client.primaryEmail'>Email</th>
+        <th >电话</th>
+        <th>其他联系</th>  
+        <th class="sortable" data-attr='country.country'>当前所在地</th>
+        <th class="sortable" data-attr='validI20'>I-20有效</th>
+        <th class="sortable" data-attr='previousSchool'>原学校</th>
+        <th class="sortable" data-attr='targetSchool'>目标学校</th>
+        <th class="sortable" data-attr='gpa'>GPA</th>
+        <th class="sortable" data-attr='toefl'>TOEFL</th>
+        <th>其他成绩</th>
+         <th>年龄</th>
+        
+        <th class="sortable" data-attr='major'>就读专业</th>
+        <th>何弃疗</th>
+        <th class="sortable" data-attr='contractSigned'>签约日</th>
+        <th class="sortable" data-attr='contractPaid'>付款日</th>
+        <th>转学服务</th>
+        <th>紧急服务</th>
+        <th>学术服务</th>
+        <th>签证服务</th>
+        <th class="sortable" data-attr='contractPrice'>签约价格</th>
+        <th>签约价明细</th> 
+        <th class="sortable" data-attr='applicationFeePaid'>$150申请费</th>
+        <th class="sortable" data-attr='paymentOption.paymentOption'>付款方式</th>
+        <th class="sortable" data-attr='endFeeDue'>是否应收尾款</th>
+        <th class="sortable" data-attr='endFee'>是否已收尾款</th>
+        <th class="sortable" data-attr='teacher.nickname'>服务老师</th>
+        <th>Comments</th>
+        <th></th>
+
+              
+    </tr></thead>
+    <tbody>
+        <tr id="scrollerfirst"></tr>
+    </tbody></table>
+    </div><div class="pinned"><table class="Contracts">
+    <thead>
+        <tr id="pinnedheader" style="height: 39px;">
+        <th class="sortable" data-attr='client.chineseName'>学生中文名</th>        
+    </tr></thead>
+    <tbody>          
+    <tr id="pinnedfirst">
+    </tr> </tbody></table></div></div>
+<label>Total Contract: </label><span id="total_count"></span>
+    <div class="app"></div>
+</section>
+
+</section>

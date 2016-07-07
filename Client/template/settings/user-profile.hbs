@@ -1,0 +1,120 @@
+<header>
+    <button class="button-back">Back</button>
+    <h2 class="title">Your Profile</h2>
+    <section class="page-actions">
+        <button class="button-save">Save</button>
+    </section>
+</header>
+
+<section class="content no-padding">
+     <header class="user-profile-header">
+        <a class="edit-cover-image js-modal-cover button" href="#">Change Cover</a>
+    </header>
+    <form class="user-profile" novalidate="novalidate">
+
+        <fieldset class="user-details-top">
+            <div class="form-group">
+                <label for="user-firstname" >First Name</label>
+                <input type="url" value="{{firstname}}" id="user-firstname" placeholder="First Name" autocorrect="off" />
+            </div>
+            <div class="form-group">
+                <label for="user-lastname">Last Name</label>
+                <input type="url" value="{{lastname}}" id="user-lastname" placeholder="Last Name" autocorrect="off" />
+            </div>
+             <div class="form-group">
+                <label for="user-name" >Nickname</label>
+                <input type="url" value="{{nickname}}" id="user-nickname" placeholder="Nickname" autocorrect="off" />
+            </div>
+            <div class="form-group">
+                <label for="user-address" >Address</label>
+                <input type="text" value="{{address}}" id="user-address" placeholder="Address" autocorrect="off" />
+            </div>
+            <div class="form-group">
+                <label for="user-city" >City</label>
+                <input type="text" value="{{city}}" id="user-city" placeholder="City" autocorrect="off" />
+            </div>
+            <div class="form-group">
+                <label for="user-state" >State</label>
+                <input type="text" value="{{state}}" id="user-state" placeholder="State" autocorrect="off" />
+            </div>
+            <div class="form-group">
+                <label for="user-zipcode" >Zipcode</label>
+                <input type="text" value="{{zipcode}}" id="user-zipcode" placeholder="Zipcode" autocorrect="off" />
+            </div>
+        </fieldset>
+        <fieldset class="user-details-bottom">
+
+            <div class="form-group">
+                <label for"user-email">Personal Email</label>
+                <input type="email" value="{{personalemail}}" id="user-personalemail" placeholder="Email Address" autocapitalize="off" autocorrect="off" />
+                <p>Used for notifications</p>
+            </div>
+            <div class="form-group">
+                <label for"user-phone">Phone</label>
+                <input type="text" value="{{phone}}" id="user-phone" placeholder="Phone" autocapitalize="off" autocorrect="off" />
+                <p>Used for notifications</p>
+            </div>
+            <div class="form-group">
+                <label for"user-skype">Skype</label>
+                <input type="text" value="{{skype}}" id="user-skype" placeholder="Skype" autocapitalize="off" autocorrect="off" />
+                <p>Used for notifications</p>
+            </div>
+            <div class="form-group">
+                <label for="user-wechat" >Wechat</label>
+                <input type="text" value="{{wechat}}" id="user-wechat" placeholder="Wechat" autocorrect="off" />
+                <p></p>
+            </div>
+            <div class="form-group">
+                <label for="user-dropbox">Dropbox</label>
+                <input type="text" value="{{dropbox}}" id="user-dropbox" placeholder="Dropbox" autocorrect="off" />
+                <p></p>
+            </div>
+             <div class="form-group">
+                <label for="user-evernote" >Evernote</label>
+                <input type="text" value="{{evernote}}" id="user-evernote" placeholder="Evernote" autocorrect="off" />
+                <p></p>
+            </div>
+             <div class="form-group">
+                <label for="user-currentRole" >Current Role</label>
+                <select value="{{currentRole}}" id="user-currentRole" >
+                    <option value="0">Primary</option>
+                    <option value="1">Secondary</option></select>
+                <p></p>
+            </div>
+            <div class="form-group bio-container">
+                <label for="user-bio">Bio</label>
+                <textarea id="user-bio">{{bio}}</textarea>
+                <p>
+                    Write about you, in 200 characters or less.
+                    <span class="word-count">0</span>
+                </p>
+            </div>
+
+            <hr />
+
+        </fieldset>
+
+        <fieldset>
+
+            <div class="form-group">
+                <label for="user-password-old">Old Password</label>
+                <input type="password" id="user-password-old" />
+            </div>
+
+            <div class="form-group">
+                <label for="user-password-new">New Password</label>
+                <input type="password" id="user-password-new" />
+            </div>
+
+            <div class="form-group">
+                <label for="user-new-password-verification">Verify Password</label>
+                <input type="password" id="user-new-password-verification" />
+            </div>
+            <div class="form-group">
+                <button type="button" class="button-delete button-change-password">Change Password</button>
+            </div>
+
+        </fieldset>
+
+    </form>
+</section>
