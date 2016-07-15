@@ -1,2 +1,4 @@
 config/connections.js
 .tmp/**
+node_modules/**
+assets/js/all.js
