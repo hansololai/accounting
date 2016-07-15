@@ -18,41 +18,37 @@ var Dropzone=require('dropzone');
 
 
 var MenuTitle={
-	'Reminder':'销售提醒',
-	'SalesComissionLookUp':'销售佣金设置',
-	'MonthlyGoal':'销售每月目标',
+	'ExpenseSummary':'报账总结',
+	'ExpenseReport':'报账',
+	'Project':'项目',
+	'Category':'类别',
+	//'SalesComissionLookUp':'销售佣金设置',
+	//'MonthlyGoal':'销售每月目标',
 	'TableEditor':'其他设置'
 }
 var AdvancedSettings={
-	Reminder:main.baseDataView.extend({
-	    paginator:true,
-	    title:'Notifications',
-	    renderOptions:{nofield:true},
-    	templateName:'default',
-    	collectionName:'SimplePageCollection',
-    	minScreenSize:0,
-	    collectionParam:{url:'/Notifications/'},
-	    constructColumns:function(){
-	        var self=this;
-	        var DeleteCell = BackgridCells.DeleteCell;
-	        var RedirectCell=Backgrid.Cell.extend({
-	            render: function () {
-	              var id=this.model.get('contract');
-	              this.$el.html('<a href="/admin/contract/'+id+'">Link</a>');
-	              this.delegateEvents();
-	              return this;
-	            }
-	        });
-	        this.columns=[
-	        {name:'chineseName',label:'客户名字',editable:false,cell:'string'},
-	        {name:'days',label:'天数',editable:false,cell:'integer'},
-	        {name:'nickname',label:'销售名字',editable:false,cell:'string'},
-	        {name:'reason',label:'提醒理由',editable:false,cell:'string'},
-	        {name:'createdAt',label:'生成日期',editable:false,cell:'date'},
-	        {name:'',label:'跳转',editable:false,cell:RedirectCell},
-	        {name:'',label:'Delete',editable:false,cell:DeleteCell}
-	        ];
-	        return Promise.resolve({});
+	ExpenseSummary:main.baseDataView.extend({
+		collectionName:'SimplePageCollection',
+		collectionUrl:'/ExpenseSummary/',
+		title:'报销总结',
+		minScreenSize:0,
+		renderOptions:{nofield:true},
+		templateName:'default',
+		constructColumns:function(){
+			var self=this;
+			return util.ajaxGET('/Category/').then(function(category){
+				self.columns=[];
+				self.columns[0]={name:'name',label:'Name',editable:false,cell:'string'};
+				for(var i=0;i<5;i++){
+					_.each(category,function(e){
+						self.columns.push({name:e['name']+i,label:e['name']+i,editable:false,cell:'string'});
+					})
+				}
+			});
+		},
+		events:{
+	        'click  button.button-alt': 'refetch',
+			'click  button.button-save': 'save',
 	    },
 	    destroy: function () {
 	        this.$el.removeClass('active');
@@ -61,57 +57,76 @@ var AdvancedSettings={
 	    afterRender:function(){
 	        this.$el.attr('id', this.id);
 	        this.$el.addClass('active');
-	    },
+	    }
 	}),
-	SalesComissionLookUp:main.baseDataView.extend({
-	    collectionName:'SimplePageCollection',
-	    collectionUrl:'/ComissionLookup/',
-	    title:'销售佣金设定',
-	    filterFields:['rolename'],
-	    paginator:true,
-	    minScreenSize:0,
-	    renderOptions:{nofield:true},
-	    templateName:'default',
-	     constructColumns:function(){
-	        var self=this;
-	        var editable=false;
-	        if(parseInt(this.rank||"1")>=3){
-	            editable=true;
-	        }
-	        return util.ajaxGET('/contract/getAllOptions/').then(function(AllOptions){
-	            var t=_.map(AllOptions['SalesGroup'],function(e){return [e.salesGroup,e.id]});
-	            t.push(['任何销售组',0]);
-	            var salesgroup=BackgridCells.SelectCell({name:"SalesGroup",values:t});
-	            t=_.map(AllOptions['Lead'],function(e){return [e.lead,e.id]});
-	            t.push(['Any Lead',0]);
-	            var lead=BackgridCells.SelectCell({name:"Lead",values:t});
-	            var leadDetail=lead.extend({
-	                optionValues:function(){
-	                    var l=this.model.get('lead')||0;
-	                    var shrunk=_.where(AllOptions['LeadDetail'],{lead:l});
-	                    var toadd=_.map(shrunk,function(e){return [e.leadDetail,e.id]});
-	                    toadd.push(['Any LeadDetail',0]);
-	                    return [{name:'LeadDetail',values:toadd}];
-	                }
-	            });
-	            
-	            self.columns=[
-	                {name:'lead',label:'Lead种类',editable:editable,cell:lead},
-	                {name:'leadDetail',label:'lead种类细分',editable:editable,cell:leadDetail},
-	                {name:'salesGroup',label:'销售组',editable:editable,cell:salesgroup},
-	                {name:'alone',label:'是否独立',editable:editable,cell:'boolean'},
-	                {name:'rolename',label:'销售角色',editable:editable,cell:'string'},
-	                {name:'comission',label:'佣金百分比',editable:editable,cell:Backgrid.NumberCell.extend({decimals:3})},
-	                {name:'',label:'Delete',cell:BackgridCells.DeleteCell}
-	            ];
-	            // self.selectFields=[
-	            // {name:'puppet',options:_.map(user,function(e){return [e.nickname,e.id]})},
-	            // {name:'boss',options:_.map(user,function(e){return [e.nickname,e.id]})},
-	            // ];
-	            return Promise.resolve({});
-	        });
+	ExpenseReport:main.baseDataView.extend({
+		collectionName:'SimplePageCollection',
+		collectionUrl:'/ExpenseEntry/',
+		title:'报销',
+		minScreenSize:0,
+		renderOptions:{nofield:true},
+		templateName:'default',
+		constructColumns:function(){
+			var self=this;
+			var usercell=Backgrid.Cell.extend({
+			   render: function () {
+			   	var u=this.model.get('user');
+			    this.$el.html(u.nickname);
+			    this.delegateEvents();
+			    return this;
+			  }
+			  })
+
+			return Promise.all([util.ajaxGET('/Project/'),util.ajaxGET('/Category/')]).spread(function(projects,category){
+				var projectcell=BackgridCells.SelectCell({nullable:true,name:"Project",values:_.map(projects,function(e){return [e.name,e.id]})});
+            	var categorycell=BackgridCells.SelectCell({nullable:true,name:"Category",values:_.map(category,function(e){return [e.name,e.id]})});
+            
+				self.columns=[
+					{name:'date',label:'Date',editable:true,cell:'date'},
+					{name:'user',label:'User',editable:false,cell:usercell},
+					{name:'category',label:'Category',editable:true,cell:categorycell},
+					{name:'project',label:'Project',editable:true,cell:projectcell},
+					{name:'desc',label:'细节',editable:true,cell:'string'},
+					{name:'amount',label:'Amount',editable:true,cell:'number'},
+					
+				]
+
+			})
+		},
+		events:{
+	        'click  button.button-alt': 'refetch',
+	        'click .button-add':'addnew',
+			'click  button.button-save': 'save',
 	    },
-	    events:{
+	    destroy: function () {
+	        this.$el.removeClass('active');
+	        this.undelegateEvents();
+	    },
+	    afterRender:function(){
+	        this.$el.attr('id', this.id);
+	        this.$el.addClass('active');
+	        $('.page-actions').prepend('<button class="button-add">Add New</button>');
+	    },
+	    newModel:function(){
+        	return new Obiwang.Models.syncModel({user:1},{_url:'/ExpenseEntry/'});
+    	},
+
+
+	}),
+	Category:main.baseDataView.extend({
+		collectionName:'SimplePageCollection',
+		collectionUrl:'/Category/',
+		title:'类别',
+		minScreenSize:0,
+		renderOptions:{nofield:true},
+		templateName:'default',
+		constructColumns:function(){
+			this.columns=[
+				{name:'name',label:'Name',editable:true,cell:'string'},
+			]
+			return Promise.resolve({});
+		},
+		events:{
 	        'click  button.button-alt': 'refetch',
 	        'click .button-add':'addnew'
 	    },
@@ -125,40 +140,26 @@ var AdvancedSettings={
 	        $('.page-actions').prepend('<button class="button-add">Add New</button>');
 	    },
 	    newModel:function(){
-        	return new Obiwang.Models.syncModel(null,{_url:'/Application/'});
+        	return new Obiwang.Models.syncModel(null,{_url:'/Category/'});
     	},
-	    // addnew:function(e){
-	    //     e.preventDefault();
-	    //     // var popUpView = new LookupForm({collection:this.collection});
-	    //     // popUpView.render()
-	    //     // $('.app').html(popUpView.el);
-	    //     var toAdd=new Obiwang.Models.syncModel(null,{_url:this.collectionUrl});
-	    //     var self=this;
-	    //     toAdd.save(null,{
-	    //         success:function(model){
-	    //             self.collection.add(toAdd);
-	    //         },
-	    //         error:function(model,response){
-	    //             util.handleRequestError(response);
-	    //         },
-	    //         save:false
-	    //     });  
-	    // },
+
 	}),
-	MonthlyGoal:main.baseDataView.extend({
-	    title:'每月销量',
-	    paginator:true,
-	    collectionName:'General',
-	    minScreenSize:0,
-	    renderOptions:{month:true},
-	    collectionParam:{url:'/Market/MonthlyGoal/'},
-	    templateName:'default',
-	    constructColumns:function(){
-	         this.columns=[
-	        {name:'nickname',label:'老师名字',editable:false,cell:'string'},
-	        {name:'goal',label:'目标金额',cell:'number'}
-	        ];
-	        return Promise.resolve({});
+	Project:main.baseDataView.extend({
+		collectionName:'SimplePageCollection',
+		collectionUrl:'/Project/',
+		title:'项目',
+		minScreenSize:0,
+		renderOptions:{nofield:true},
+		templateName:'default',
+		constructColumns:function(){
+			this.columns=[
+				{name:'name',label:'Name',editable:true,cell:'string'},
+			]
+			return Promise.resolve({});
+		},
+		events:{
+	        'click  button.button-alt': 'refetch',
+	        'click .button-add':'addnew'
 	    },
 	    destroy: function () {
 	        this.$el.removeClass('active');
@@ -167,7 +168,12 @@ var AdvancedSettings={
 	    afterRender:function(){
 	        this.$el.attr('id', this.id);
 	        this.$el.addClass('active');
+	        $('.page-actions').prepend('<button class="button-add">Add New</button>');
 	    },
+	    newModel:function(){
+        	return new Obiwang.Models.syncModel(null,{_url:'/Project/'});
+    	},
+
 	}),
 	TableEditor:main.basePaneView.extend({
 	    templateName:'dateTableView',

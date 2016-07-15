@@ -64,7 +64,7 @@ module.exports=Backbone.Router.extend({
     },
     advancedSettings: function (pane) {
         if (!pane) {
-            this.navigate(this.root+'advancedSettings/Reminder/', {
+            this.navigate(this.root+'advancedSettings/ExpenseReport/', {
                 trigger: true,
                 replace: true,
             });

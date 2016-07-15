@@ -175,7 +175,11 @@ module.exports={
                     }
                     i=i||"";
                     if(typeof i !=='string'){
-                        i=i.toString();
+                        if (i['nickname']){
+                            i=i['nickname']
+                        }else{
+                            i=i.toString();
+                        }
                     }
                     if(i.search(/[,\n]/g)>-1){
                         i="\""+i+"\"";

@@ -72,7 +72,8 @@ var Sidebar = baseView.extend({
         if(toDisplay){
             this.pane =new toDisplay({ el: '.settings-content' }); 
         }else{
-            this.pane=new this.MenuViews.Pane({ el: '.settings-content' });
+            //this.pane=new this.MenuViews.Pane({ el: '.settings-content' });
+            this.pane=new main.baseDataView({el:'.settings-content'});
         }
         //this.pane.render();
         //this.pane.afterRender();

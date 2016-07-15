@@ -46,6 +46,7 @@ module.exports={
 		var self=this;
 		this.constructColumns().then(function(data){
 			self.constructTable();
+			self.refetch();
 		}).catch(function(err){
 			util.handleRequestError(err);
 		});

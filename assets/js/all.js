@@ -375,7 +375,7 @@ module.exports=Backbone.Router.extend({
     },
     advancedSettings: function (pane) {
         if (!pane) {
-            this.navigate(this.root+'advancedSettings/Reminder/', {
+            this.navigate(this.root+'advancedSettings/ExpenseReport/', {
                 trigger: true,
                 replace: true,
             });
@@ -9424,7 +9424,11 @@ module.exports={
                     }
                     i=i||"";
                     if(typeof i !=='string'){
-                        i=i.toString();
+                        if (i['nickname']){
+                            i=i['nickname']
+                        }else{
+                            i=i.toString();
+                        }
                     }
                     if(i.search(/[,\n]/g)>-1){
                         i="\""+i+"\"";
@@ -9833,41 +9837,37 @@ var Dropzone=require('dropzone');
 
 
 var MenuTitle={
-	'Reminder':'销售提醒',
-	'SalesComissionLookUp':'销售佣金设置',
-	'MonthlyGoal':'销售每月目标',
+	'ExpenseSummary':'报账总结',
+	'ExpenseReport':'报账',
+	'Project':'项目',
+	'Category':'类别',
+	//'SalesComissionLookUp':'销售佣金设置',
+	//'MonthlyGoal':'销售每月目标',
 	'TableEditor':'其他设置'
 }
 var AdvancedSettings={
-	Reminder:main.baseDataView.extend({
-	    paginator:true,
-	    title:'Notifications',
-	    renderOptions:{nofield:true},
-    	templateName:'default',
-    	collectionName:'SimplePageCollection',
-    	minScreenSize:0,
-	    collectionParam:{url:'/Notifications/'},
-	    constructColumns:function(){
-	        var self=this;
-	        var DeleteCell = BackgridCells.DeleteCell;
-	        var RedirectCell=Backgrid.Cell.extend({
-	            render: function () {
-	              var id=this.model.get('contract');
-	              this.$el.html('<a href="/admin/contract/'+id+'">Link</a>');
-	              this.delegateEvents();
-	              return this;
-	            }
-	        });
-	        this.columns=[
-	        {name:'chineseName',label:'客户名字',editable:false,cell:'string'},
-	        {name:'days',label:'天数',editable:false,cell:'integer'},
-	        {name:'nickname',label:'销售名字',editable:false,cell:'string'},
-	        {name:'reason',label:'提醒理由',editable:false,cell:'string'},
-	        {name:'createdAt',label:'生成日期',editable:false,cell:'date'},
-	        {name:'',label:'跳转',editable:false,cell:RedirectCell},
-	        {name:'',label:'Delete',editable:false,cell:DeleteCell}
-	        ];
-	        return Promise.resolve({});
+	ExpenseSummary:main.baseDataView.extend({
+		collectionName:'SimplePageCollection',
+		collectionUrl:'/ExpenseSummary/',
+		title:'报销总结',
+		minScreenSize:0,
+		renderOptions:{nofield:true},
+		templateName:'default',
+		constructColumns:function(){
+			var self=this;
+			return util.ajaxGET('/Category/').then(function(category){
+				self.columns=[];
+				self.columns[0]={name:'name',label:'Name',editable:false,cell:'string'};
+				for(var i=0;i<5;i++){
+					_.each(category,function(e){
+						self.columns.push({name:e['name']+i,label:e['name']+i,editable:false,cell:'string'});
+					})
+				}
+			});
+		},
+		events:{
+	        'click  button.button-alt': 'refetch',
+			'click  button.button-save': 'save',
 	    },
 	    destroy: function () {
 	        this.$el.removeClass('active');
@@ -9876,57 +9876,76 @@ var AdvancedSettings={
 	    afterRender:function(){
 	        this.$el.attr('id', this.id);
 	        this.$el.addClass('active');
-	    },
+	    }
 	}),
-	SalesComissionLookUp:main.baseDataView.extend({
-	    collectionName:'SimplePageCollection',
-	    collectionUrl:'/ComissionLookup/',
-	    title:'销售佣金设定',
-	    filterFields:['rolename'],
-	    paginator:true,
-	    minScreenSize:0,
-	    renderOptions:{nofield:true},
-	    templateName:'default',
-	     constructColumns:function(){
-	        var self=this;
-	        var editable=false;
-	        if(parseInt(this.rank||"1")>=3){
-	            editable=true;
-	        }
-	        return util.ajaxGET('/contract/getAllOptions/').then(function(AllOptions){
-	            var t=_.map(AllOptions['SalesGroup'],function(e){return [e.salesGroup,e.id]});
-	            t.push(['任何销售组',0]);
-	            var salesgroup=BackgridCells.SelectCell({name:"SalesGroup",values:t});
-	            t=_.map(AllOptions['Lead'],function(e){return [e.lead,e.id]});
-	            t.push(['Any Lead',0]);
-	            var lead=BackgridCells.SelectCell({name:"Lead",values:t});
-	            var leadDetail=lead.extend({
-	                optionValues:function(){
-	                    var l=this.model.get('lead')||0;
-	                    var shrunk=_.where(AllOptions['LeadDetail'],{lead:l});
-	                    var toadd=_.map(shrunk,function(e){return [e.leadDetail,e.id]});
-	                    toadd.push(['Any LeadDetail',0]);
-	                    return [{name:'LeadDetail',values:toadd}];
-	                }
-	            });
-	            
-	            self.columns=[
-	                {name:'lead',label:'Lead种类',editable:editable,cell:lead},
-	                {name:'leadDetail',label:'lead种类细分',editable:editable,cell:leadDetail},
-	                {name:'salesGroup',label:'销售组',editable:editable,cell:salesgroup},
-	                {name:'alone',label:'是否独立',editable:editable,cell:'boolean'},
-	                {name:'rolename',label:'销售角色',editable:editable,cell:'string'},
-	                {name:'comission',label:'佣金百分比',editable:editable,cell:Backgrid.NumberCell.extend({decimals:3})},
-	                {name:'',label:'Delete',cell:BackgridCells.DeleteCell}
-	            ];
-	            // self.selectFields=[
-	            // {name:'puppet',options:_.map(user,function(e){return [e.nickname,e.id]})},
-	            // {name:'boss',options:_.map(user,function(e){return [e.nickname,e.id]})},
-	            // ];
-	            return Promise.resolve({});
-	        });
+	ExpenseReport:main.baseDataView.extend({
+		collectionName:'SimplePageCollection',
+		collectionUrl:'/ExpenseEntry/',
+		title:'报销',
+		minScreenSize:0,
+		renderOptions:{nofield:true},
+		templateName:'default',
+		constructColumns:function(){
+			var self=this;
+			var usercell=Backgrid.Cell.extend({
+			   render: function () {
+			   	var u=this.model.get('user');
+			    this.$el.html(u.nickname);
+			    this.delegateEvents();
+			    return this;
+			  }
+			  })
+
+			return Promise.all([util.ajaxGET('/Project/'),util.ajaxGET('/Category/')]).spread(function(projects,category){
+				var projectcell=BackgridCells.SelectCell({nullable:true,name:"Project",values:_.map(projects,function(e){return [e.name,e.id]})});
+            	var categorycell=BackgridCells.SelectCell({nullable:true,name:"Category",values:_.map(category,function(e){return [e.name,e.id]})});
+            
+				self.columns=[
+					{name:'date',label:'Date',editable:true,cell:'date'},
+					{name:'user',label:'User',editable:false,cell:usercell},
+					{name:'category',label:'Category',editable:true,cell:categorycell},
+					{name:'project',label:'Project',editable:true,cell:projectcell},
+					{name:'desc',label:'细节',editable:true,cell:'string'},
+					{name:'amount',label:'Amount',editable:true,cell:'number'},
+					
+				]
+
+			})
+		},
+		events:{
+	        'click  button.button-alt': 'refetch',
+	        'click .button-add':'addnew',
+			'click  button.button-save': 'save',
 	    },
-	    events:{
+	    destroy: function () {
+	        this.$el.removeClass('active');
+	        this.undelegateEvents();
+	    },
+	    afterRender:function(){
+	        this.$el.attr('id', this.id);
+	        this.$el.addClass('active');
+	        $('.page-actions').prepend('<button class="button-add">Add New</button>');
+	    },
+	    newModel:function(){
+        	return new Obiwang.Models.syncModel({user:1},{_url:'/ExpenseEntry/'});
+    	},
+
+
+	}),
+	Category:main.baseDataView.extend({
+		collectionName:'SimplePageCollection',
+		collectionUrl:'/Category/',
+		title:'类别',
+		minScreenSize:0,
+		renderOptions:{nofield:true},
+		templateName:'default',
+		constructColumns:function(){
+			this.columns=[
+				{name:'name',label:'Name',editable:true,cell:'string'},
+			]
+			return Promise.resolve({});
+		},
+		events:{
 	        'click  button.button-alt': 'refetch',
 	        'click .button-add':'addnew'
 	    },
@@ -9940,40 +9959,26 @@ var AdvancedSettings={
 	        $('.page-actions').prepend('<button class="button-add">Add New</button>');
 	    },
 	    newModel:function(){
-        	return new Obiwang.Models.syncModel(null,{_url:'/Application/'});
+        	return new Obiwang.Models.syncModel(null,{_url:'/Category/'});
     	},
-	    // addnew:function(e){
-	    //     e.preventDefault();
-	    //     // var popUpView = new LookupForm({collection:this.collection});
-	    //     // popUpView.render()
-	    //     // $('.app').html(popUpView.el);
-	    //     var toAdd=new Obiwang.Models.syncModel(null,{_url:this.collectionUrl});
-	    //     var self=this;
-	    //     toAdd.save(null,{
-	    //         success:function(model){
-	    //             self.collection.add(toAdd);
-	    //         },
-	    //         error:function(model,response){
-	    //             util.handleRequestError(response);
-	    //         },
-	    //         save:false
-	    //     });  
-	    // },
+
 	}),
-	MonthlyGoal:main.baseDataView.extend({
-	    title:'每月销量',
-	    paginator:true,
-	    collectionName:'General',
-	    minScreenSize:0,
-	    renderOptions:{month:true},
-	    collectionParam:{url:'/Market/MonthlyGoal/'},
-	    templateName:'default',
-	    constructColumns:function(){
-	         this.columns=[
-	        {name:'nickname',label:'老师名字',editable:false,cell:'string'},
-	        {name:'goal',label:'目标金额',cell:'number'}
-	        ];
-	        return Promise.resolve({});
+	Project:main.baseDataView.extend({
+		collectionName:'SimplePageCollection',
+		collectionUrl:'/Project/',
+		title:'项目',
+		minScreenSize:0,
+		renderOptions:{nofield:true},
+		templateName:'default',
+		constructColumns:function(){
+			this.columns=[
+				{name:'name',label:'Name',editable:true,cell:'string'},
+			]
+			return Promise.resolve({});
+		},
+		events:{
+	        'click  button.button-alt': 'refetch',
+	        'click .button-add':'addnew'
 	    },
 	    destroy: function () {
 	        this.$el.removeClass('active');
@@ -9982,7 +9987,12 @@ var AdvancedSettings={
 	    afterRender:function(){
 	        this.$el.attr('id', this.id);
 	        this.$el.addClass('active');
+	        $('.page-actions').prepend('<button class="button-add">Add New</button>');
 	    },
+	    newModel:function(){
+        	return new Obiwang.Models.syncModel(null,{_url:'/Project/'});
+    	},
+
 	}),
 	TableEditor:main.basePaneView.extend({
 	    templateName:'dateTableView',
@@ -10454,6 +10464,7 @@ module.exports={
 		var self=this;
 		this.constructColumns().then(function(data){
 			self.constructTable();
+			self.refetch();
 		}).catch(function(err){
 			util.handleRequestError(err);
 		});
@@ -11060,309 +11071,309 @@ Settings.user=main.basePaneView.extend({
             }
     },
 });
-Settings.allUsers=main.baseDataView.extend({
-    collectionName:'SimplePageCollection',
-    collectionUrl:'/User/',
-    title:'Users',
-    paginator:true,
-    renderOptions:{nofield:true,deleted:true},
-    minScreenSize:0,
-    filterFields:['email','nickname'],
-    templateName:'default',
-    constructColumns:function(){
-        var self=this;
-        var editable=false;
-        if(parseInt(this.rank||"1")>=3){
-            editable=true;
-        }
-        return Promise.all([util.ajaxGET('/Role/'),util.ajaxGET('/User/')]).spread(function(role,user){
-            var roleselect=BackgridCells.SelectCell({name:"Role",values:_.map(role,function(e){return [e.role,e.id]})});
-            var userselect=BackgridCells.SelectCell({name:"User",values:_.map(user,function(e){return [e.nickname,e.id]})});
-            // var subroleselect=roleselect.extend({
-            //     optionValues:function(){
-            //         var r=this.model.get('role')||0;
-            //         var shrunk=_.where(subrole,{role:r});
-            //         var toadd=_.map(shrunk,function(e){return [e.roleName,e.id]});
-            //         return [{name:'SubRole',values:toadd}];
-            //     }
-            // });      
-            var secondarysubroleselect=roleselect.extend({
-                optionValues:function(){
-                    var r=this.model.get('secondaryRole')||0;
-                    var shrunk=_.where(subrole,{role:r});
-                    var toadd=_.map(shrunk,function(e){return [e.roleName,e.id]});
-                    return [{name:'SubRole',values:toadd}];
-                }
-            });
-            self.columns=[
-            {name:'nickname',label:'称呼',editable: false,cell:'string'},
-            {name:'firstname',label:'姓',editable:false,cell:'string'},                    
-            {name:'lastname',label:'名',editable:false,cell:'string'},
-            {name:'email',label:'邮箱',editable:false,cell:'string'},
-            {name:'role',label:'所在部门',editable:editable,cell:roleselect},
-            //{name:'subRole',label:'细分职位',editable:editable,cell:subroleselect},
-            {name:'rank',label:'职位等级',editable:editable,cell:'number'},
-            {name:'secondaryRole',label:'第二部门',editable:editable,cell:roleselect},
-            {name:'secondarySubRole',label:'第二细分职位',editable:editable,cell:secondarysubroleselect},
-            {name:'secondaryRank',label:'第二职位等级',editable:editable,cell:'number'},
-            //{name:'boss',label:'主管',editable:editable,cell:userselect},
-            {name:'createdAt',label:'注册时间',editable:false,cell:BackgridCells.MomentCell},
-            {name:'active',label:'在职',editable:editable,cell:'boolean'}
-            ];
-            return Promise.resolve({});
-        });
-    },
-    destroy: function () {
-        this.$el.removeClass('active');
-        this.undelegateEvents();
-    },
-    afterRender:function(){
-        this.$el.attr('id', this.id);
-        this.$el.addClass('active');
-    },
-});
-Settings.lookup=main.baseDataView.extend({
-    collectionName:'SyncCollection',
-    collectionUrl:'/ServComissionLookUp/',
-    title:'申请老师Comission机制',
-    paginator:true,
-    minScreenSize:0,
-    renderOptions:{nofield:true},
-    filterFields:['serviceType'],
-    templateName:'default',
-    constructColumns:function(){
-        var self=this;
-        var editable=false;
-        if(parseInt(this.rank||"1")==3){
-            editable=true;
-        }
-        return Promise.all([util.ajaxGET('/ServiceType/'),util.ajaxGET('/ServRole/'),util.ajaxGET('/ServLevel/'),util.ajaxGET('/ServiceStatus/')]).spread(function(sType,sRole,sLevel,sStatus){
-            var sTypeSel=BackgridCells.SelectCell({name:"ServiceType",values:_.map(sType,function(e){return [e.serviceType,e.id]})});
-            var sRoleSel=BackgridCells.SelectCell({name:"Service Role",values:_.map(sRole,function(e){return [e.servRole,e.id]})});
-            var sLevelSel=BackgridCells.SelectCell({name:"Service Level",values:_.map(sLevel,function(e){return [e.servLevel,e.id]})});
-            var sStatusSel=BackgridCells.SelectCell({name:"Service Status",values:_.map(sStatus,function(e){return [e.serviceStatus,e.id]})});
+// Settings.allUsers=main.baseDataView.extend({
+//     collectionName:'SimplePageCollection',
+//     collectionUrl:'/User/',
+//     title:'Users',
+//     paginator:true,
+//     renderOptions:{nofield:true,deleted:true},
+//     minScreenSize:0,
+//     filterFields:['email','nickname'],
+//     templateName:'default',
+//     constructColumns:function(){
+//         var self=this;
+//         var editable=false;
+//         if(parseInt(this.rank||"1")>=3){
+//             editable=true;
+//         }
+//         return Promise.all([util.ajaxGET('/Role/'),util.ajaxGET('/User/')]).spread(function(role,user){
+//             var roleselect=BackgridCells.SelectCell({name:"Role",values:_.map(role,function(e){return [e.role,e.id]})});
+//             var userselect=BackgridCells.SelectCell({name:"User",values:_.map(user,function(e){return [e.nickname,e.id]})});
+//             // var subroleselect=roleselect.extend({
+//             //     optionValues:function(){
+//             //         var r=this.model.get('role')||0;
+//             //         var shrunk=_.where(subrole,{role:r});
+//             //         var toadd=_.map(shrunk,function(e){return [e.roleName,e.id]});
+//             //         return [{name:'SubRole',values:toadd}];
+//             //     }
+//             // });      
+//             var secondarysubroleselect=roleselect.extend({
+//                 optionValues:function(){
+//                     var r=this.model.get('secondaryRole')||0;
+//                     var shrunk=_.where(subrole,{role:r});
+//                     var toadd=_.map(shrunk,function(e){return [e.roleName,e.id]});
+//                     return [{name:'SubRole',values:toadd}];
+//                 }
+//             });
+//             self.columns=[
+//             {name:'nickname',label:'称呼',editable: false,cell:'string'},
+//             {name:'firstname',label:'姓',editable:false,cell:'string'},                    
+//             {name:'lastname',label:'名',editable:false,cell:'string'},
+//             {name:'email',label:'邮箱',editable:false,cell:'string'},
+//             {name:'role',label:'所在部门',editable:editable,cell:roleselect},
+//             //{name:'subRole',label:'细分职位',editable:editable,cell:subroleselect},
+//             {name:'rank',label:'职位等级',editable:editable,cell:'number'},
+//             {name:'secondaryRole',label:'第二部门',editable:editable,cell:roleselect},
+//             {name:'secondarySubRole',label:'第二细分职位',editable:editable,cell:secondarysubroleselect},
+//             {name:'secondaryRank',label:'第二职位等级',editable:editable,cell:'number'},
+//             //{name:'boss',label:'主管',editable:editable,cell:userselect},
+//             {name:'createdAt',label:'注册时间',editable:false,cell:BackgridCells.MomentCell},
+//             {name:'active',label:'在职',editable:editable,cell:'boolean'}
+//             ];
+//             return Promise.resolve({});
+//         });
+//     },
+//     destroy: function () {
+//         this.$el.removeClass('active');
+//         this.undelegateEvents();
+//     },
+//     afterRender:function(){
+//         this.$el.attr('id', this.id);
+//         this.$el.addClass('active');
+//     },
+// });
+// Settings.lookup=main.baseDataView.extend({
+//     collectionName:'SyncCollection',
+//     collectionUrl:'/ServComissionLookUp/',
+//     title:'申请老师Comission机制',
+//     paginator:true,
+//     minScreenSize:0,
+//     renderOptions:{nofield:true},
+//     filterFields:['serviceType'],
+//     templateName:'default',
+//     constructColumns:function(){
+//         var self=this;
+//         var editable=false;
+//         if(parseInt(this.rank||"1")==3){
+//             editable=true;
+//         }
+//         return Promise.all([util.ajaxGET('/ServiceType/'),util.ajaxGET('/ServRole/'),util.ajaxGET('/ServLevel/'),util.ajaxGET('/ServiceStatus/')]).spread(function(sType,sRole,sLevel,sStatus){
+//             var sTypeSel=BackgridCells.SelectCell({name:"ServiceType",values:_.map(sType,function(e){return [e.serviceType,e.id]})});
+//             var sRoleSel=BackgridCells.SelectCell({name:"Service Role",values:_.map(sRole,function(e){return [e.servRole,e.id]})});
+//             var sLevelSel=BackgridCells.SelectCell({name:"Service Level",values:_.map(sLevel,function(e){return [e.servLevel,e.id]})});
+//             var sStatusSel=BackgridCells.SelectCell({name:"Service Status",values:_.map(sStatus,function(e){return [e.serviceStatus,e.id]})});
             
-            self.columns=[
-            {name:'serviceType',label:'服务名称',editable:editable,cell:sTypeSel},
-            {name:'servRole',label:'角色名称',editable:editable,cell:sRoleSel},
-            {name:'servLevel',label:'文书级别',editable:editable,cell:sLevelSel},                    
-            {name:'pricePerCol',label:'每学校佣金',editable:editable,cell:'number'},
-            {name:'priceFlat',label:'固定佣金',editable:editable,cell:'number'},
-            {name:'serviceStatus',label:'进度',editable:editable,cell:sStatusSel},
-            {name:'statusportion',label:'进度佣金百分比',editable:editable,cell:'number'},
-            {name:'statusflat',label:'固定进度佣金',editable:editable,cell:'number'},
-            {name:'',label:'Delete',cell:BackgridCells.DeleteCell}
-            ];
-            return Promise.resolve({});
-        });
-    },
-    events:{
-        'click  button.button-alt': 'refetch',
-        'click .button-add':'addnew'
-    },
-    destroy: function () {
-        this.$el.removeClass('active');
-        this.undelegateEvents();
-    },
-    afterRender:function(){
-        this.$el.attr('id', this.id);
-        this.$el.addClass('active');
-        $('.content').prepend('<div>The Comission is calculated: 佣金=[(每学校佣金*学校#)+固定佣金]*进度佣金百分比+固定进度佣金</div>')
-        $('.page-actions').prepend('<button class="button-add">Add New</button>');
-    },
-    addnew:function(e){
-        e.preventDefault();
-        var popUpView = new LookupForm({collection:this.collection});
-        popUpView.render()
-        $('.app').html(popUpView.el);
-        // var toAdd=new Obiwang.Models.syncModel({_url:'/ServComissionLookUp/'});
-        // var self=this;
-        // toAdd.save(null,{
-        //     success:function(model){
-        //         self.collection.add(toAdd);
-        //     },
-        //     error:function(model,response){
-        //         util.handleRequestError(response);
-        //     },
-        //     save:false
-        // });  
-    },
-});
-var LookupForm=Backbone.Modal.extend({
-    prefix:"bbm",
-    template: JST['editbox'],
-    submitEl: '.ok',
-    cancelEl:'.cancel',
-    initialize: function (options){
-        _.bindAll(this,  'render', 'afterRender');
-        var self=this;
-        this.render=_.wrap(this.render,function(render){
-            render();
-            self.afterRender();
-        });
-        this.collection=options.collection;
-        this.model=new Obiwang.Models.syncModel({},{_url:'/ServComissionLookUp/'});
-    },
-    afterRender:function(){
-        var template=_.template('<div class="form-group">\
-                <label for="<%= editorId %>">\
-                <% if (typeof(titleHTML) !== "undefined"){ %><%= titleHTML %>\
-                <% } else { %><%- title %><% } %></label>\
-                <div class="controls">\
-                <span data-editor></span>\
-                <div class="help-inline" data-error></div>\
-                <div class="help-block"><%= help %></div>\
-                </div>\
-            </div>');
-        Backbone.Form.Field.template=template;
-        var container=this.$el.find('.bbm-modal__section');
-        var self=this;
+//             self.columns=[
+//             {name:'serviceType',label:'服务名称',editable:editable,cell:sTypeSel},
+//             {name:'servRole',label:'角色名称',editable:editable,cell:sRoleSel},
+//             {name:'servLevel',label:'文书级别',editable:editable,cell:sLevelSel},                    
+//             {name:'pricePerCol',label:'每学校佣金',editable:editable,cell:'number'},
+//             {name:'priceFlat',label:'固定佣金',editable:editable,cell:'number'},
+//             {name:'serviceStatus',label:'进度',editable:editable,cell:sStatusSel},
+//             {name:'statusportion',label:'进度佣金百分比',editable:editable,cell:'number'},
+//             {name:'statusflat',label:'固定进度佣金',editable:editable,cell:'number'},
+//             {name:'',label:'Delete',cell:BackgridCells.DeleteCell}
+//             ];
+//             return Promise.resolve({});
+//         });
+//     },
+//     events:{
+//         'click  button.button-alt': 'refetch',
+//         'click .button-add':'addnew'
+//     },
+//     destroy: function () {
+//         this.$el.removeClass('active');
+//         this.undelegateEvents();
+//     },
+//     afterRender:function(){
+//         this.$el.attr('id', this.id);
+//         this.$el.addClass('active');
+//         $('.content').prepend('<div>The Comission is calculated: 佣金=[(每学校佣金*学校#)+固定佣金]*进度佣金百分比+固定进度佣金</div>')
+//         $('.page-actions').prepend('<button class="button-add">Add New</button>');
+//     },
+//     addnew:function(e){
+//         e.preventDefault();
+//         var popUpView = new LookupForm({collection:this.collection});
+//         popUpView.render()
+//         $('.app').html(popUpView.el);
+//         // var toAdd=new Obiwang.Models.syncModel({_url:'/ServComissionLookUp/'});
+//         // var self=this;
+//         // toAdd.save(null,{
+//         //     success:function(model){
+//         //         self.collection.add(toAdd);
+//         //     },
+//         //     error:function(model,response){
+//         //         util.handleRequestError(response);
+//         //     },
+//         //     save:false
+//         // });  
+//     },
+// });
+// var LookupForm=Backbone.Modal.extend({
+//     prefix:"bbm",
+//     template: JST['editbox'],
+//     submitEl: '.ok',
+//     cancelEl:'.cancel',
+//     initialize: function (options){
+//         _.bindAll(this,  'render', 'afterRender');
+//         var self=this;
+//         this.render=_.wrap(this.render,function(render){
+//             render();
+//             self.afterRender();
+//         });
+//         this.collection=options.collection;
+//         this.model=new Obiwang.Models.syncModel({},{_url:'/ServComissionLookUp/'});
+//     },
+//     afterRender:function(){
+//         var template=_.template('<div class="form-group">\
+//                 <label for="<%= editorId %>">\
+//                 <% if (typeof(titleHTML) !== "undefined"){ %><%= titleHTML %>\
+//                 <% } else { %><%- title %><% } %></label>\
+//                 <div class="controls">\
+//                 <span data-editor></span>\
+//                 <div class="help-inline" data-error></div>\
+//                 <div class="help-block"><%= help %></div>\
+//                 </div>\
+//             </div>');
+//         Backbone.Form.Field.template=template;
+//         var container=this.$el.find('.bbm-modal__section');
+//         var self=this;
         
 
-        this.form=new Backbone.Form({
-            model:this.model,
-            schema:{
-                servRole:{type:'Select',title:'角色名称',options:new Obiwang.Collections.SimpleCollection([],{url:'/ServRole/'})},
-                serviceType:{type:'Select',title:'服务名称',options:new Obiwang.Collections.SimpleCollection([],{url:'/ServiceType/'})},
-                servLevel:{type:'Select',title:'文书级别',options:new Obiwang.Collections.SimpleCollection([],{url:'/ServLevel/'})},
-                serviceStatus:{type:'Select',title:'进度',options:new Obiwang.Collections.SimpleCollection([],{url:'/ServiceStatus/'})},
-                pricePerCol:{type:'Number',title:'每学校佣金'},
-                priceFlat:{type:'Number',title:'固定佣金'},
-                statusportion:{type:'Number',title:'进度佣金百分比'},
-                statusflat:{type:'Number',title:'固定进度佣金'},
-            }
-        });
-        this.form.render();
-        container.append(this.form.el);
-        return this;
-    },
-    submit:function(e){
-        var self=this;
-        var data=this.form.getValue();
-        this.model.save(data,{
-            save:false,
-            success:function(model){
-                self.collection.add(model);
-            },
-            error:function(model,response){
-                util.handleRequestError(response);
-            },
-        })
-    },
-    checkKey:function(e){
-        if (this.active) {
-            if (e.keyCode==27) return this.triggerCancel();
-        }
-    }
-});
-Settings.hierarchy=main.baseDataView.extend({
-    collectionName:'SyncCollection',
-    collectionUrl:'/WhoOwnsWho/',
-    title:'老师等级机制',
-    paginator:true,
-    minScreenSize:0,
-    renderOptions:{nofield:true},
-    filterFields:['puppet','boss'],
-    templateName:'default',
-    constructColumns:function(){
-        var self=this;
-        var editable=false;
-        if(parseInt(this.rank||"1")==3){
-            editable=true;
-        }
-        return util.ajaxGET('/User/').then(function(user){
-            var userselect=BackgridCells.SelectCell({name:"User",values:_.map(user,function(e){return [e.nickname,e.id]})});
-            self.columns=[
-                {name:'id',label:'id',editable:false,cell:'integer'},
-                {name:'puppet',label:'被偷窥',editable:editable,cell:userselect},
-                {name:'boss',label:'主动偷窥',editable:editable,cell:userselect},
-                {name:'',label:'Delete',cell:BackgridCells.DeleteCell}
-            ];
-            self.selectFields=[
-            {name:'puppet',options:_.map(user,function(e){return [e.nickname,e.id]})},
-            {name:'boss',options:_.map(user,function(e){return [e.nickname,e.id]})},
-            ];
-            return Promise.resolve({});
-        });
-    },
-    events:{
-        'click  button.button-alt': 'refetch',
-        'click .button-add':'addnew'
-    },
-    destroy: function () {
-        this.$el.removeClass('active');
-        this.undelegateEvents();
-    },
-    afterRender:function(){
-        this.$el.attr('id', this.id);
-        this.$el.addClass('active');
-        $('.page-actions').prepend('<button class="button-add">Add New</button>');
-    },
-    addnew:function(e){
-        e.preventDefault();
-        // var popUpView = new LookupForm({collection:this.collection});
-        // popUpView.render()
-        // $('.app').html(popUpView.el);
-        var toAdd=new Obiwang.Models.syncModel(null,{_url:this.collectionUrl});
-        var self=this;
-        toAdd.save(null,{
-            success:function(model){
-                self.collection.add(toAdd);
-            },
-            error:function(model,response){
-                util.handleRequestError(response);
-            },
-            save:false
-        });  
-    },
-});
+//         this.form=new Backbone.Form({
+//             model:this.model,
+//             schema:{
+//                 servRole:{type:'Select',title:'角色名称',options:new Obiwang.Collections.SimpleCollection([],{url:'/ServRole/'})},
+//                 serviceType:{type:'Select',title:'服务名称',options:new Obiwang.Collections.SimpleCollection([],{url:'/ServiceType/'})},
+//                 servLevel:{type:'Select',title:'文书级别',options:new Obiwang.Collections.SimpleCollection([],{url:'/ServLevel/'})},
+//                 serviceStatus:{type:'Select',title:'进度',options:new Obiwang.Collections.SimpleCollection([],{url:'/ServiceStatus/'})},
+//                 pricePerCol:{type:'Number',title:'每学校佣金'},
+//                 priceFlat:{type:'Number',title:'固定佣金'},
+//                 statusportion:{type:'Number',title:'进度佣金百分比'},
+//                 statusflat:{type:'Number',title:'固定进度佣金'},
+//             }
+//         });
+//         this.form.render();
+//         container.append(this.form.el);
+//         return this;
+//     },
+//     submit:function(e){
+//         var self=this;
+//         var data=this.form.getValue();
+//         this.model.save(data,{
+//             save:false,
+//             success:function(model){
+//                 self.collection.add(model);
+//             },
+//             error:function(model,response){
+//                 util.handleRequestError(response);
+//             },
+//         })
+//     },
+//     checkKey:function(e){
+//         if (this.active) {
+//             if (e.keyCode==27) return this.triggerCancel();
+//         }
+//     }
+// });
+// Settings.hierarchy=main.baseDataView.extend({
+//     collectionName:'SyncCollection',
+//     collectionUrl:'/WhoOwnsWho/',
+//     title:'老师等级机制',
+//     paginator:true,
+//     minScreenSize:0,
+//     renderOptions:{nofield:true},
+//     filterFields:['puppet','boss'],
+//     templateName:'default',
+//     constructColumns:function(){
+//         var self=this;
+//         var editable=false;
+//         if(parseInt(this.rank||"1")==3){
+//             editable=true;
+//         }
+//         return util.ajaxGET('/User/').then(function(user){
+//             var userselect=BackgridCells.SelectCell({name:"User",values:_.map(user,function(e){return [e.nickname,e.id]})});
+//             self.columns=[
+//                 {name:'id',label:'id',editable:false,cell:'integer'},
+//                 {name:'puppet',label:'被偷窥',editable:editable,cell:userselect},
+//                 {name:'boss',label:'主动偷窥',editable:editable,cell:userselect},
+//                 {name:'',label:'Delete',cell:BackgridCells.DeleteCell}
+//             ];
+//             self.selectFields=[
+//             {name:'puppet',options:_.map(user,function(e){return [e.nickname,e.id]})},
+//             {name:'boss',options:_.map(user,function(e){return [e.nickname,e.id]})},
+//             ];
+//             return Promise.resolve({});
+//         });
+//     },
+//     events:{
+//         'click  button.button-alt': 'refetch',
+//         'click .button-add':'addnew'
+//     },
+//     destroy: function () {
+//         this.$el.removeClass('active');
+//         this.undelegateEvents();
+//     },
+//     afterRender:function(){
+//         this.$el.attr('id', this.id);
+//         this.$el.addClass('active');
+//         $('.page-actions').prepend('<button class="button-add">Add New</button>');
+//     },
+//     addnew:function(e){
+//         e.preventDefault();
+//         // var popUpView = new LookupForm({collection:this.collection});
+//         // popUpView.render()
+//         // $('.app').html(popUpView.el);
+//         var toAdd=new Obiwang.Models.syncModel(null,{_url:this.collectionUrl});
+//         var self=this;
+//         toAdd.save(null,{
+//             success:function(model){
+//                 self.collection.add(toAdd);
+//             },
+//             error:function(model,response){
+//                 util.handleRequestError(response);
+//             },
+//             save:false
+//         });  
+//     },
+// });
 
-Settings.comissionLookup=Settings.hierarchy.extend({
-    collectionUrl:'/ComissionLookup/',
-    title:'销售佣金设定',
-    filterFields:['rolename'],
-   // filterFields:['puppet','boss'],
-    constructColumns:function(){
-        var self=this;
-        var editable=false;
-        if(parseInt(this.rank||"1")==3){
-            editable=true;
-        }
-        return util.ajaxGET('/contract/getAllOptions/').then(function(AllOptions){
-            var t=_.map(AllOptions['SalesGroup'],function(e){return [e.salesGroup,e.id]});
-            t.push(['任何销售组',0]);
-            var salesgroup=BackgridCells.SelectCell({name:"SalesGroup",values:t});
-            t=_.map(AllOptions['Lead'],function(e){return [e.lead,e.id]});
-            t.push(['Any Lead',0]);
-            var lead=BackgridCells.SelectCell({name:"Lead",values:t});
-            var leadDetail=lead.extend({
-                optionValues:function(){
-                    var l=this.model.get('lead')||0;
-                    var shrunk=_.where(AllOptions['LeadDetail'],{lead:l});
-                    var toadd=_.map(shrunk,function(e){return [e.leadDetail,e.id]});
-                    toadd.push(['Any LeadDetail',0]);
-                    return [{name:'LeadDetail',values:toadd}];
-                }
-            });
+// Settings.comissionLookup=Settings.hierarchy.extend({
+//     collectionUrl:'/ComissionLookup/',
+//     title:'销售佣金设定',
+//     filterFields:['rolename'],
+//    // filterFields:['puppet','boss'],
+//     constructColumns:function(){
+//         var self=this;
+//         var editable=false;
+//         if(parseInt(this.rank||"1")==3){
+//             editable=true;
+//         }
+//         return util.ajaxGET('/contract/getAllOptions/').then(function(AllOptions){
+//             var t=_.map(AllOptions['SalesGroup'],function(e){return [e.salesGroup,e.id]});
+//             t.push(['任何销售组',0]);
+//             var salesgroup=BackgridCells.SelectCell({name:"SalesGroup",values:t});
+//             t=_.map(AllOptions['Lead'],function(e){return [e.lead,e.id]});
+//             t.push(['Any Lead',0]);
+//             var lead=BackgridCells.SelectCell({name:"Lead",values:t});
+//             var leadDetail=lead.extend({
+//                 optionValues:function(){
+//                     var l=this.model.get('lead')||0;
+//                     var shrunk=_.where(AllOptions['LeadDetail'],{lead:l});
+//                     var toadd=_.map(shrunk,function(e){return [e.leadDetail,e.id]});
+//                     toadd.push(['Any LeadDetail',0]);
+//                     return [{name:'LeadDetail',values:toadd}];
+//                 }
+//             });
             
-            self.columns=[
-                {name:'lead',label:'Lead种类',editable:editable,cell:lead},
-                {name:'leadDetail',label:'lead种类细分',editable:editable,cell:leadDetail},
-                {name:'salesGroup',label:'销售组',editable:editable,cell:salesgroup},
-                {name:'alone',label:'是否独立',editable:editable,cell:'boolean'},
-                {name:'rolename',label:'销售角色',editable:editable,cell:'string'},
-                {name:'comission',label:'佣金百分比',editable:editable,cell:Backgrid.NumberCell.extend({decimals:3})},
-                {name:'',label:'Delete',cell:BackgridCells.DeleteCell}
-            ];
-            // self.selectFields=[
-            // {name:'puppet',options:_.map(user,function(e){return [e.nickname,e.id]})},
-            // {name:'boss',options:_.map(user,function(e){return [e.nickname,e.id]})},
-            // ];
-            return Promise.resolve({});
-        });
-    },
+//             self.columns=[
+//                 {name:'lead',label:'Lead种类',editable:editable,cell:lead},
+//                 {name:'leadDetail',label:'lead种类细分',editable:editable,cell:leadDetail},
+//                 {name:'salesGroup',label:'销售组',editable:editable,cell:salesgroup},
+//                 {name:'alone',label:'是否独立',editable:editable,cell:'boolean'},
+//                 {name:'rolename',label:'销售角色',editable:editable,cell:'string'},
+//                 {name:'comission',label:'佣金百分比',editable:editable,cell:Backgrid.NumberCell.extend({decimals:3})},
+//                 {name:'',label:'Delete',cell:BackgridCells.DeleteCell}
+//             ];
+//             // self.selectFields=[
+//             // {name:'puppet',options:_.map(user,function(e){return [e.nickname,e.id]})},
+//             // {name:'boss',options:_.map(user,function(e){return [e.nickname,e.id]})},
+//             // ];
+//             return Promise.resolve({});
+//         });
+//     },
 
-});
+// });
 Settings.fileupload=main.baseDataView.extend({
     collectionName:'SimplePageCollection',
     collectionUrl:'/Publicfiles/',
@@ -11431,74 +11442,74 @@ Settings.fileupload=main.baseDataView.extend({
     },
 
 });
-Settings.link=main.baseDataView.extend({
-    collectionName:'SimplePageCollection',
-    collectionUrl:'/StaticLink/',
-    title:'有用的链接',
-    //filterFields:['filename'],
-    paginator:true,
-    minScreenSize:0,
-    renderOptions:{nofield:true},
-    templateName:'default',
-   // filterFields:['puppet','boss'],
-    constructColumns:function(){
-        var self=this;
-        var editable=false;
-        if(parseInt(this.rank||"1")==3){
-            editable=true;
-        }
-        return Promise.all([util.ajaxGET('/User/'),util.ajaxGET('/Role/'),util.ajaxGET('/DocType/')]).spread(function(user,role,type){
-            var userselect=BackgridCells.SelectCell({name:"老师们",values:_.map(user,function(e){return [e.nickname,e.id]})});
-            var typeselect=BackgridCells.SelectCell({name:'文件归类',values:_.map(type,function(e){return [e.docType,e.id]})});
-            var roleselect=BackgridCells.SelectCell({name:'部门',values:_.map(role,function(e){return [e.role,e.id]})});
-            self.columns=[
-                {name:'name',label:'名称',editable:editable,cell:'string'},
-                {name:'createdAt',label:'设置时间',editable:false,cell:'datetime'},
-                {name:'user',label:'负责老师',editable:false,cell:userselect},
-                {name:'fileCategory',label:'归类',editable:editable,cell:typeselect},
-                {name:'role',label:'部门',editable:editable,cell:roleselect},
-                {name:'link',label:'链接',editable:editable,cell:'uri'},
-                {name:'',label:'Delete',editable:false,cell:BackgridCells.DeleteCell}
-            ];
-            // self.selectFields=[
-            // {name:'puppet',options:_.map(user,function(e){return [e.nickname,e.id]})},
-            // {name:'boss',options:_.map(user,function(e){return [e.nickname,e.id]})},
-            // ];
-            return Promise.resolve({});
-        });
-    },
-    events:{
-        'click  button.button-alt': 'refetch',
-        'click .button-add':'addnew'
-    },
-    destroy: function () {
-        this.$el.removeClass('active');
-        this.undelegateEvents();
-    },
-    afterRender:function(){
-        this.$el.attr('id', this.id);
-        this.$el.addClass('active');
-        $('.page-actions').prepend('<button class="button-add">Add New</button>');
-    },
-    addnew:function(e){
-        e.preventDefault();
-        // var popUpView = new LookupForm({collection:this.collection});
-        // popUpView.render()
-        // $('.app').html(popUpView.el);
-        var toAdd=new Obiwang.Models.syncModel(null,{_url:this.collectionUrl});
-        var self=this;
-        toAdd.save(null,{
-            success:function(model){
-                self.collection.add(toAdd);
-            },
-            error:function(model,response){
-                util.handleRequestError(response);
-            },
-            save:false
-        });  
-    },
+// Settings.link=main.baseDataView.extend({
+//     collectionName:'SimplePageCollection',
+//     collectionUrl:'/StaticLink/',
+//     title:'有用的链接',
+//     //filterFields:['filename'],
+//     paginator:true,
+//     minScreenSize:0,
+//     renderOptions:{nofield:true},
+//     templateName:'default',
+//    // filterFields:['puppet','boss'],
+//     constructColumns:function(){
+//         var self=this;
+//         var editable=false;
+//         if(parseInt(this.rank||"1")==3){
+//             editable=true;
+//         }
+//         return Promise.all([util.ajaxGET('/User/'),util.ajaxGET('/Role/'),util.ajaxGET('/DocType/')]).spread(function(user,role,type){
+//             var userselect=BackgridCells.SelectCell({name:"老师们",values:_.map(user,function(e){return [e.nickname,e.id]})});
+//             var typeselect=BackgridCells.SelectCell({name:'文件归类',values:_.map(type,function(e){return [e.docType,e.id]})});
+//             var roleselect=BackgridCells.SelectCell({name:'部门',values:_.map(role,function(e){return [e.role,e.id]})});
+//             self.columns=[
+//                 {name:'name',label:'名称',editable:editable,cell:'string'},
+//                 {name:'createdAt',label:'设置时间',editable:false,cell:'datetime'},
+//                 {name:'user',label:'负责老师',editable:false,cell:userselect},
+//                 {name:'fileCategory',label:'归类',editable:editable,cell:typeselect},
+//                 {name:'role',label:'部门',editable:editable,cell:roleselect},
+//                 {name:'link',label:'链接',editable:editable,cell:'uri'},
+//                 {name:'',label:'Delete',editable:false,cell:BackgridCells.DeleteCell}
+//             ];
+//             // self.selectFields=[
+//             // {name:'puppet',options:_.map(user,function(e){return [e.nickname,e.id]})},
+//             // {name:'boss',options:_.map(user,function(e){return [e.nickname,e.id]})},
+//             // ];
+//             return Promise.resolve({});
+//         });
+//     },
+//     events:{
+//         'click  button.button-alt': 'refetch',
+//         'click .button-add':'addnew'
+//     },
+//     destroy: function () {
+//         this.$el.removeClass('active');
+//         this.undelegateEvents();
+//     },
+//     afterRender:function(){
+//         this.$el.attr('id', this.id);
+//         this.$el.addClass('active');
+//         $('.page-actions').prepend('<button class="button-add">Add New</button>');
+//     },
+//     addnew:function(e){
+//         e.preventDefault();
+//         // var popUpView = new LookupForm({collection:this.collection});
+//         // popUpView.render()
+//         // $('.app').html(popUpView.el);
+//         var toAdd=new Obiwang.Models.syncModel(null,{_url:this.collectionUrl});
+//         var self=this;
+//         toAdd.save(null,{
+//             success:function(model){
+//                 self.collection.add(toAdd);
+//             },
+//             error:function(model,response){
+//                 util.handleRequestError(response);
+//             },
+//             save:false
+//         });  
+//     },
 
-});
+// });
 Settings.message=main.baseDataView.extend({
     collectionName:'SimplePageCollection',
     collectionUrl:'/Message/',
@@ -11634,12 +11645,12 @@ Settings.tableEditor=main.basePaneView.extend({
 
 var MenuTitle={
     user:'个人资料',
-    allUsers:'UserControl',
+    //allUsers:'UserControl',
     //lookup:'Comission机制',
     //hierarchy:'老师等级机制',
     //comissionLookup:'销售佣金设定',
     fileupload:'文件下载',
-    link:'有用的链接',
+    //link:'有用的链接',
     message:'内部消息',
    // tableEditor:'表格修改'
 }
@@ -11748,7 +11759,8 @@ var Sidebar = baseView.extend({
         if(toDisplay){
             this.pane =new toDisplay({ el: '.settings-content' }); 
         }else{
-            this.pane=new this.MenuViews.Pane({ el: '.settings-content' });
+            //this.pane=new this.MenuViews.Pane({ el: '.settings-content' });
+            this.pane=new main.baseDataView({el:'.settings-content'});
         }
         //this.pane.render();
         //this.pane.afterRender();
@@ -46330,8 +46342,9 @@ $.widget( "ui.tooltip", {
 }( jQuery ) );
 
 },{"jquery":103}],103:[function(require,module,exports){
+/*eslint-disable no-unused-vars*/
 /*!
- * jQuery JavaScript Library v3.0.0
+ * jQuery JavaScript Library v3.1.0
  * https://jquery.com/
  *
  * Includes Sizzle.js
@@ -46341,7 +46354,7 @@ $.widget( "ui.tooltip", {
  * Released under the MIT license
  * https://jquery.org/license
  *
- * Date: 2016-06-09T18:02Z
+ * Date: 2016-07-07T21:44Z
  */
 ( function( global, factory ) {
 
@@ -46369,7 +46382,7 @@ $.widget( "ui.tooltip", {
 	}
 
 // Pass this if window is not defined yet
-}( typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
+} )( typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
 
 // Edge <= 12 - 13+, Firefox <=18 - 45+, IE 10 - 11, Safari 5.1 - 9+, iOS 6 - 9.1
 // throw exceptions when non-strict code (e.g., ASP.NET 4.5) accesses strict mode
@@ -46413,10 +46426,14 @@ var support = {};
 		script.text = code;
 		doc.head.appendChild( script ).parentNode.removeChild( script );
 	}
+/* global Symbol */
+// Defining this global in .eslintrc would create a danger of using the global
+// unguarded in another place, it seems safer to define global only for this module
+
 
 
 var
-	version = "3.0.0",
+	version = "3.1.0",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -46648,7 +46665,11 @@ jQuery.extend( {
 	},
 
 	isEmptyObject: function( obj ) {
+
+		/* eslint-disable no-unused-vars */
+		// See https://github.com/eslint/eslint/issues/6125
 		var name;
+
 		for ( name in obj ) {
 			return false;
 		}
@@ -46838,15 +46859,9 @@ jQuery.extend( {
 	support: support
 } );
 
-// JSHint would error on this code due to the Symbol not being defined in ES5.
-// Defining this global in .jshintrc would create a danger of using the global
-// unguarded in another place, it seems safer to just disable JSHint for these
-// three lines.
-/* jshint ignore: start */
 if ( typeof Symbol === "function" ) {
 	jQuery.fn[ Symbol.iterator ] = arr[ Symbol.iterator ];
 }
-/* jshint ignore: end */
 
 // Populate the class2type map
 jQuery.each( "Boolean Number String Function Array Date RegExp Object Error Symbol".split( " " ),
@@ -49085,6 +49100,7 @@ jQuery.escapeSelector = Sizzle.escape;
 
 
 
+
 var dir = function( elem, dir, until ) {
 	var matched = [],
 		truncate = until !== undefined;
@@ -49126,7 +49142,6 @@ var risSimple = /^.[^:#\[\.,]*$/;
 function winnow( elements, qualifier, not ) {
 	if ( jQuery.isFunction( qualifier ) ) {
 		return jQuery.grep( elements, function( elem, i ) {
-			/* jshint -W018 */
 			return !!qualifier.call( elem, i, elem ) !== not;
 		} );
 
@@ -49752,7 +49767,7 @@ function adoptValue( value, resolve, reject ) {
 	// For Promises/A+, convert exceptions into rejections
 	// Since jQuery.when doesn't unwrap thenables, we can skip the extra checks appearing in
 	// Deferred#then to conditionally suppress rejection.
-	} catch ( /*jshint -W002 */ value ) {
+	} catch ( value ) {
 
 		// Support: Android 4.0 only
 		// Strict mode functions invoked without .call/.apply get global-object context
@@ -50117,12 +50132,29 @@ jQuery.Deferred.exceptionHook = function( error, stack ) {
 
 
 
+jQuery.readyException = function( error ) {
+	window.setTimeout( function() {
+		throw error;
+	} );
+};
+
+
+
+
 // The deferred used on DOM ready
 var readyList = jQuery.Deferred();
 
 jQuery.fn.ready = function( fn ) {
 
-	readyList.then( fn );
+	readyList
+		.then( fn )
+
+		// Wrap jQuery.readyException in a function so that the lookup
+		// happens at the time of error handling instead of callback
+		// registration.
+		.catch( function( error ) {
+			jQuery.readyException( error );
+		} );
 
 	return this;
 };
@@ -50262,7 +50294,6 @@ var acceptData = function( owner ) {
 	//    - Node.DOCUMENT_NODE
 	//  - Object
 	//    - Any
-	/* jshint -W018 */
 	return owner.nodeType === 1 || owner.nodeType === 9 || !( +owner.nodeType );
 };
 
@@ -50763,8 +50794,12 @@ function adjustCSS( elem, prop, valueParts, tween ) {
 		scale = 1,
 		maxIterations = 20,
 		currentValue = tween ?
-			function() { return tween.cur(); } :
-			function() { return jQuery.css( elem, prop, "" ); },
+			function() {
+				return tween.cur();
+			} :
+			function() {
+				return jQuery.css( elem, prop, "" );
+			},
 		initial = currentValue(),
 		unit = valueParts && valueParts[ 3 ] || ( jQuery.cssNumber[ prop ] ? "" : "px" ),
 
@@ -51806,7 +51841,13 @@ jQuery.fn.extend( {
 
 
 var
+
+	/* eslint-disable max-len */
+
+	// See https://github.com/eslint/eslint/issues/3229
 	rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi,
+
+	/* eslint-enable */
 
 	// Support: IE <=10 - 11, Edge 12 - 13
 	// In IE/Edge using regex groups here causes severe slowdowns.
@@ -52963,7 +53004,7 @@ function genFx( type, includeWidth ) {
 	// If we include width, step value is 1 to do all cssExpand values,
 	// otherwise step value is 2 to skip over Left and Right
 	includeWidth = includeWidth ? 1 : 0;
-	for ( ; i < 4 ; i += 2 - includeWidth ) {
+	for ( ; i < 4; i += 2 - includeWidth ) {
 		which = cssExpand[ i ];
 		attrs[ "margin" + which ] = attrs[ "padding" + which ] = type;
 	}
@@ -52990,7 +53031,6 @@ function createTween( value, prop, animation ) {
 }
 
 function defaultPrefilter( elem, props, opts ) {
-	/* jshint validthis: true */
 	var prop, value, toggle, hooks, oldfire, propTween, restoreDisplay, display,
 		isBox = "width" in props || "height" in props,
 		anim = this,
@@ -53132,8 +53172,11 @@ function defaultPrefilter( elem, props, opts ) {
 				showHide( [ elem ], true );
 			}
 
-			/* jshint -W083 */
+			/* eslint-disable no-loop-func */
+
 			anim.done( function() {
+
+			/* eslint-enable no-loop-func */
 
 				// The final step of a "hide" animation is actually hiding the element
 				if ( !hidden ) {
@@ -53219,7 +53262,7 @@ function Animation( elem, properties, options ) {
 				index = 0,
 				length = animation.tweens.length;
 
-			for ( ; index < length ; index++ ) {
+			for ( ; index < length; index++ ) {
 				animation.tweens[ index ].run( percent );
 			}
 
@@ -53260,7 +53303,7 @@ function Animation( elem, properties, options ) {
 					return this;
 				}
 				stopped = true;
-				for ( ; index < length ; index++ ) {
+				for ( ; index < length; index++ ) {
 					animation.tweens[ index ].run( 1 );
 				}
 
@@ -53278,7 +53321,7 @@ function Animation( elem, properties, options ) {
 
 	propFilter( props, animation.opts.specialEasing );
 
-	for ( ; index < length ; index++ ) {
+	for ( ; index < length; index++ ) {
 		result = Animation.prefilters[ index ].call( animation, elem, props, animation.opts );
 		if ( result ) {
 			if ( jQuery.isFunction( result.stop ) ) {
@@ -53332,7 +53375,7 @@ jQuery.Animation = jQuery.extend( Animation, {
 			index = 0,
 			length = props.length;
 
-		for ( ; index < length ; index++ ) {
+		for ( ; index < length; index++ ) {
 			prop = props[ index ];
 			Animation.tweeners[ prop ] = Animation.tweeners[ prop ] || [];
 			Animation.tweeners[ prop ].unshift( callback );
@@ -54193,11 +54236,16 @@ jQuery.extend( {
 
 				while ( i-- ) {
 					option = options[ i ];
+
+					/* eslint-disable no-cond-assign */
+
 					if ( option.selected =
 						jQuery.inArray( jQuery.valHooks.option.get( option ), values ) > -1
 					) {
 						optionSet = true;
 					}
+
+					/* eslint-enable no-cond-assign */
 				}
 
 				// Force browsers to behave consistently when non-matching value is set
@@ -54906,6 +54954,7 @@ jQuery.extend( {
 		processData: true,
 		async: true,
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+
 		/*
 		timeout: 0,
 		data: null,
@@ -56366,7 +56415,7 @@ if ( !noGlobal ) {
 
 
 return jQuery;
-} ) );
+} );
 
 },{}],104:[function(require,module,exports){
 (function (global){
@@ -76758,34 +76807,96 @@ var substr = 'ab'.substr(-1) === 'b'
 // shim for using process in browser
 
 var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+(function () {
+  try {
+    cachedSetTimeout = setTimeout;
+  } catch (e) {
+    cachedSetTimeout = function () {
+      throw new Error('setTimeout is not defined');
+    }
+  }
+  try {
+    cachedClearTimeout = clearTimeout;
+  } catch (e) {
+    cachedClearTimeout = function () {
+      throw new Error('clearTimeout is not defined');
+    }
+  }
+} ())
 var queue = [];
 var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
 
 function drainQueue() {
     if (draining) {
         return;
     }
+    var timeout = cachedSetTimeout(cleanUpNextTick);
     draining = true;
-    var currentQueue;
+
     var len = queue.length;
     while(len) {
         currentQueue = queue;
         queue = [];
-        var i = -1;
-        while (++i < len) {
-            currentQueue[i]();
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
         }
+        queueIndex = -1;
         len = queue.length;
     }
+    currentQueue = null;
     draining = false;
+    cachedClearTimeout(timeout);
 }
+
 process.nextTick = function (fun) {
-    queue.push(fun);
-    if (!draining) {
-        setTimeout(drainQueue, 0);
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        cachedSetTimeout(drainQueue, 0);
     }
 };
 
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
 process.title = 'browser';
 process.browser = true;
 process.env = {};
@@ -76807,7 +76918,6 @@ process.binding = function (name) {
     throw new Error('process.binding is not supported');
 };
 
-// TODO(shtylman)
 process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');

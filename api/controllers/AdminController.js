@@ -3,6 +3,7 @@ var bcrypt = require('bcrypt');
 var parse=require('csv-parse');
 var fs=require('fs');
 var Promise=require('bluebird');
+var _=require('underscore')
 loginSecurity = [];
 var partials={
     //layout:'default',
