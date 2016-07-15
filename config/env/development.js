@@ -18,7 +18,7 @@ module.exports = {
    ***************************************************************************/
 
    models: {
-     connection: 'localDiskDb'
+     connection: 'sqlitedb'
    },
    sendFakeEmail:true,
    //port:80
