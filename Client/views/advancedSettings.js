@@ -33,15 +33,19 @@ var AdvancedSettings={
 		title:'报销总结',
 		minScreenSize:0,
 		renderOptions:{nofield:true},
+		simpleFilter:true,
 		templateName:'default',
 		constructColumns:function(){
 			var self=this;
 			return util.ajaxGET('/Category/').then(function(category){
 				self.columns=[];
 				self.columns[0]={name:'name',label:'Name',editable:false,cell:'string'};
+				self.filterFields=['name'];
+		
 				for(var i=0;i<5;i++){
 					_.each(category,function(e){
 						self.columns.push({name:e['name']+i,label:e['name']+i,editable:false,cell:'string'});
+						self.filterFields.push(e['name']+i);
 					})
 				}
 			});
@@ -65,6 +69,8 @@ var AdvancedSettings={
 		title:'报销',
 		minScreenSize:0,
 		renderOptions:{nofield:true},
+		simpleFilter:true,
+		filterFields:['desc','amount','date','category','project'],
 		templateName:'default',
 		constructColumns:function(){
 			var self=this;
@@ -90,6 +96,10 @@ var AdvancedSettings={
 					{name:'amount',label:'Amount',editable:true,cell:'number'},
 					
 				]
+				self.selectFields=[
+					{name:'category',label:'Category',options:_.map(projects,function(e){return [e.name,e.id]})},
+					{name:'project',label:'Project',options:_.map(category,function(e){return [e.name,e.id]})}
+					];
 
 			})
 		},
