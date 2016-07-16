@@ -37,7 +37,7 @@ module.exports={
 	        event.preventDefault();
 	        var email = this.$el.find('.email').val(),
 	            password = this.$el.find('.password').val(),
-	            redirect = '/admin/contract/',
+	            backup_redirect = '/admin/advancedsettings/',
 	            validationErrors = [];
 	            $.ajax({
 	                url: '/admin/doSignin/',
@@ -48,11 +48,12 @@ module.exports={
 	                data: {
 	                    email: email,
 	                    password: password,
-	                    redirect: redirect
+	                    redirect: backup_redirect
 	                },
 	                success: function (msg) {
-	                    var sucessMsg={responseText:"success, please wait to be redirected",redirect:'/admin/contract/',delay:1};
-	                    util.handleRequestSuccess(sucessMsg);
+	                    var sucessMsg={responseText:"success, please wait to be redirected",delay:1};
+	                    sucessMsg['redirect']=msg['redirect'] || backup_redirect;
+                        util.handleRequestSuccess(sucessMsg);
 	                    //util.handleRequestSuccess(msg);
 	                    //window.location.href = msg.redirect;
 	                },

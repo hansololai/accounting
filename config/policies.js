@@ -26,9 +26,11 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-   // '*': 'sessionAuth',
+    '*': 'sessionAuth',
    AdminController:{
-    'advancedSettings':'sessionAuth'
+    '*':true,
+    'advancedSettings':'sessionAuth',
+    'settings':'sessionAuth'
    }
    // ViewController:{
    //  '*':false,

@@ -286,7 +286,7 @@ module.exports={
                         req.session.manager=true;
                         res.cookie('manager',true);
                     }
-                    if(!redirect) redirect='/admin/settings/';
+                    if(!redirect) redirect='/admin/advancedsettings/';
                     loginSecurity=_.reject(loginSecurity,function(ipTime){
                         return ipTime.ip===remoteAddress;
                     });
@@ -446,21 +446,5 @@ module.exports={
         }).fail(function (err) {
             return res.json(401, {error: err});
         });
-    },
-    'import':function(req,res){
-        var filename='603.csv';
-        Utilfunctions.importContract(filename)
-         .then(function(data){
-             console.log('import done');
-         }).catch(function(err){
-            Utilfunctions.errorHandler(err,res,"Import failed! file: "+filename);
-         });
-    },
-    'importUser':function(req,res){
-        Utilfunctions.importUser().then(function(data){
-             console.log('import done');
-         }).catch(function(err){
-            Utilfunctions.errorHandler(err,res,"Import User failed");
-         });
     }
 }
