@@ -18,9 +18,10 @@ module.exports = {
    ***************************************************************************/
 
    models: {
-     connection: 'sqlitedb'
+     connection: 'devMysqlServer'
    },
    sendFakeEmail:true,
+   filePath:'media/',
    //port:80
   
    port:11180,

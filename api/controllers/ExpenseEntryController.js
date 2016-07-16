@@ -23,13 +23,14 @@ module.exports = {
 		req.validate({id:'string'});
 		ExpenseEntry.findOne(req.param('id')).then(function(model){
 			if(!model) res.json(401,"Not found");
-			if(model.validate&&req.session.user.rank<2){
+			if(model.checked==true&&req.session.user.rank<2){
 				res.json(400,"Not authorized to changed validated entry");
 			}else{
-				var toUpdate=Utilfunctions.prepareUpdate(req.body,['project','category','amount','date','validate']);
+				var toUpdate=Utilfunctions.prepareUpdate(req.body,['project','category','amount','date','checked','desc']);
 				if(req.session.user.rank<2){
-					delete toUpdate['validate']
+					delete toUpdate['checked']
 				}
+				console.log(toUpdate);
 				ExpenseEntry.update(req.param('id'), toUpdate).then(function(data){
 					if (data.length>0){
 						return res.json(data[0])

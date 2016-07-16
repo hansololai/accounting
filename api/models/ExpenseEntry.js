@@ -9,12 +9,12 @@ module.exports = {
 
   attributes: {
   	user: {model:'User',required:true},
-  	category:{model:'Category',required:true,defaultsTo:'misc'},
-  	project:{model:'Project'},
+  	category:{model:'Category',required:true,defaultsTo:1},
+  	project:{model:'Project',required:true,defaultsTo:1},
   	amount:{type:'float',required:true,defaultsTo:0.0},
   	date:{type:'date',required:true,defaultsTo:function(){return new Date()}},
   	desc:{type:'string'},
-  	validate:{type:'bool',required:true,defaultsTo:false},
+  	checked:{type:'boolean',required:true,defaultsTo:false},
   	toJSON:function(){
 		var obj = this.toObject();
       	if (obj.project instanceof Object){

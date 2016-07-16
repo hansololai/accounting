@@ -6,6 +6,5 @@
  */
 
 module.exports = {
-	name:{type:'string',required:true,defaultsTo:'default'}
 };
 

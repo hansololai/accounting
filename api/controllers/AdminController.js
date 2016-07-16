@@ -286,7 +286,7 @@ module.exports={
                         req.session.manager=true;
                         res.cookie('manager',true);
                     }
-                    if(!redirect) redirect='/admin/contract/';
+                    if(!redirect) redirect='/admin/settings/';
                     loginSecurity=_.reject(loginSecurity,function(ipTime){
                         return ipTime.ip===remoteAddress;
                     });
@@ -304,16 +304,14 @@ module.exports={
             nickname = req.body.nickname,
             lastname = req.body.lastname,
             email = req.body.email,
-            password = req.body.password,
-            role=req.body.role;
+            password = req.body.password
 
         User.create({
             firstname: firstname,
             lastname: lastname,
             nickname: nickname,
             email: email,
-            password: password,
-            role:role,
+            password: password
         }).then(function (user) {
                 // var message = {
                 //     to: email,

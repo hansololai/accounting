@@ -84,7 +84,7 @@ module.exports = {
 		var active=req.param('active');
 		var where={active:true};
 
-		User.find(where).then(function(data){
+		User.find().then(function(data){
 			return res.json(data);
 		}).fail(function(err){
 			return Utilfunctions.errorHandler(err,res,"Get All Users failed");

@@ -29,7 +29,7 @@ module.exports = {
 
     wechat:{type:'string'},
 
-  	role:{model:'Role',required:true,defaultsTo:1},
+  	role:{model:'Role'},
 
     //subRole:{model:'SubRole'},
 

@@ -26,6 +26,7 @@ module.exports = {
    ***************************************************************************/
   sendFakeEmail:false,
     port:80,
+    filePath:'prodmedia/',
   //  port: 443,
   //   ssl:{
   //   key: require('fs').readFileSync(__dirname+'/../ssl/key.pem'),
