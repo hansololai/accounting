@@ -3,7 +3,9 @@ var handlebars=require('handlebars');
 module.exports={
     'asset':function (link,options)
      {
-        var output = '/' + link+"?"+Math.random();
+        //var output = '/' + link+"?"+Math.random(); // This random added after link is to prevent google chrome cache the js for dev use only
+        var output = '/' + link
+
 //        var handlebars=sails.config.handlebars;
         var toreturn =new handlebars.SafeString(output);
         return toreturn;
