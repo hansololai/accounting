@@ -39,7 +39,7 @@ module.exports.routes = {
   //     }
   // },
   '/':function(req,res,next){
-    res.redirect('/admin/contract/');
+    res.redirect('/admin/index/');
   },
   '/view':function(req,res,next){
     res.redirect('/View/welcomePage/');
